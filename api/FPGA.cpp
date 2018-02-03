@@ -9,7 +9,6 @@ bool Fpga::Init(){
 			//Addr
 			RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOF, ENABLE);
 			RCC_APB2PeriphResetCmd(RCC_APB2Periph_GPIOF, DISABLE);
-
 			GPIO_InitStructure.GPIO_Pin = OutAddrPinsF;
 			GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
 			GPIO_InitStructure.GPIO_Speed = GPIO_Speed_10MHz;
@@ -29,7 +28,7 @@ bool Fpga::Init(){
 			GPIO_InitStructure.GPIO_Pin = OutRDWR_ENPinsC;
 			GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
 			GPIO_InitStructure.GPIO_Speed = GPIO_Speed_10MHz;
-			GPIO_Init(GPIOF, &GPIO_InitStructure); 
+			GPIO_Init(GPIOC, &GPIO_InitStructure); 
 			LOG_I("Fpga Inited()");
 		
 			GPIO_ResetBits(GPIOE,0x00FF);//PE0 ~ PE7
@@ -38,24 +37,46 @@ bool Fpga::Init(){
 			return true;
 }
 
+void setOuputMode(){
+	    GPIO_InitTypeDef GPIO_InitStructure;
+	    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOE, ENABLE);
+			RCC_APB2PeriphResetCmd(RCC_APB2Periph_GPIOE, DISABLE);
+			GPIO_InitStructure.GPIO_Pin = ext::Fpga::InDataPinsE;
+			GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
+			GPIO_InitStructure.GPIO_Speed = GPIO_Speed_10MHz;
+			GPIO_Init(GPIOE, &GPIO_InitStructure); 
+}
+
+void setInputMode(){
+	    GPIO_InitTypeDef GPIO_InitStructure;
+	    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOE, ENABLE);
+			RCC_APB2PeriphResetCmd(RCC_APB2Periph_GPIOE, DISABLE);
+			GPIO_InitStructure.GPIO_Pin = ext::Fpga::InDataPinsE;
+			GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
+			GPIO_InitStructure.GPIO_Speed = GPIO_Speed_10MHz;
+			GPIO_Init(GPIOE, &GPIO_InitStructure); 
+}
+
 #define SetAddr(addr)        GPIO_ResetBits(GPIOF,0x000F);GPIO_SetBits(GPIOF,addr)
 #define SetData(data)        GPIO_ResetBits(GPIOE,0x00FF);GPIO_SetBits(GPIOE,data);
 #define GetData()            (GPIO_ReadInputData(GPIOE) & 0xFF)
 
-#define SetReadEnable()      GPIO_ResetBits(GPIOC,0x6000);GPIO_SetBits(GPIOC,0x2000);GPIO_SetBits(GPIOC,0x6000)
-#define SetReadDisable()     GPIO_ResetBits(GPIOC,0x6000);GPIO_ResetBits(GPIOE,0x00FF)
+#define SetReadEnable()      GPIO_ResetBits(GPIOC,0x6000);GPIO_SetBits(GPIOC,0x2000);GPIO_SetBits(GPIOC,0x6000);setInputMode()
 
-#define SetWriteEnable()     GPIO_ResetBits(GPIOC,0x6000);GPIO_ResetBits(GPIOC,0x2000);GPIO_SetBits(GPIOC,0x4000)
-#define SetWriteDisable()    GPIO_ResetBits(GPIOC,0x6000)
+#define SetWriteEnable()     GPIO_ResetBits(GPIOC,0x6000);GPIO_ResetBits(GPIOC,0x2000);GPIO_SetBits(GPIOC,0x4000);setOuputMode()
 
-void Fpga::write(u8 addr,u8 data){
+#define SetIODisable()       GPIO_ResetBits(GPIOC,0x6000);
+
+void Fpga::Write(u8 addr,u8 data){
+	SetIODisable();
 	SetAddr(addr);
 	SetWriteEnable();
 	SetData(data);
 	return;
 }
-u8  Fpga::read(u8 addr){
+u8  Fpga::Read(u8 addr){
 	u8 ret = 0;
+	SetIODisable();
 	SetAddr(addr);
 	SetReadEnable();
 	ret = GetData();

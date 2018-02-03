@@ -63,6 +63,14 @@ public:
 			int i = tool::convertPulseToAngle(c,100,code,ARRAY_SIZE(code));
 			lcd::displayUnicode(mainAxixDegreeAddr,code,i);
 		}
+		void onTimer(){
+			//÷˜÷·Ω«∂»
+			short code[20];
+			u32 c = Setting::getMainAxisAngleInPulse();
+			int i = tool::convertPulseToAngle(c,100,code,ARRAY_SIZE(code));
+			lcd::displayUnicode(mainAxixDegreeAddr,code,i);
+			LOG_I("Timer2 Trigger: axis pulse %d",c);
+		}
 		//≤‚¡øæ‡¿Î
 		void displayMeasured(int index){
 			char offset[] = {28,24,20,16,12,8,4,0,0,0,0,0,0,0,0,0};

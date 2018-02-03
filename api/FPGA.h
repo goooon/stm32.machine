@@ -13,8 +13,8 @@ namespace ext
 			 const static int OutDataPinsE = GPIO_Pin_0 | GPIO_Pin_1 | GPIO_Pin_2 | GPIO_Pin_3 | GPIO_Pin_4 | GPIO_Pin_5 | GPIO_Pin_6 | GPIO_Pin_7;
 		   const static int InDataPinsE = GPIO_Pin_0 | GPIO_Pin_1 | GPIO_Pin_2 | GPIO_Pin_3 | GPIO_Pin_4 | GPIO_Pin_5 | GPIO_Pin_6 | GPIO_Pin_7;
 		   static bool Init();
-			 static void write(u8 addr,u8 data);
-		   static u8   read(u8 adddr);
+			 static void Write(u8 addr,u8 data);
+		   static u8   Read(u8 adddr);
 		 private:
 		};
 }

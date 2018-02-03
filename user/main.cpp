@@ -55,7 +55,9 @@ void onExitInterupt(char port,char index){
 	char data = GPIO_ReadInputData(GPIOA) & 0xC0;
 	PostEvent(EXITR,data,index,0);
 }
-
+void onTimer2Callback(){
+	PostEvent(Timer2,0,0,0);
+}
 char uart3TxBuffer[1024];
 char uart3RxBuffer[1024];
 char uart2TxBuffer[1024];
@@ -87,6 +89,7 @@ char BeepCode[] = {0xA5,0x5A,0x03,0x80,0x02,0xC8};
 	 page = pages[0];
 	 page->enter();
 	 
+	u16 axisDegree = 0;
 	delay_init();	   	 	  //延时函数初始化	  
 	NVIC_Configuration(); //设置NVIC中断分组2:2位抢占优先级，2位响应优先级
 	UART3_Init(115200,onReceive3,uart3RxBuffer,1024, uart3TxBuffer,1024);	  //串口初始化为115200(调试用)
@@ -103,6 +106,7 @@ char BeepCode[] = {0xA5,0x5A,0x03,0x80,0x02,0xC8};
 	lcd::reset();
 	LOG_I("scan 0x%x",ext::Keyboard::Scan());
 	lcd::readCurrPage();
+	Timer2_Init(200,36000,onTimer2Callback);
 	for(;;)
 	{
 		 u32 dec,hex;
@@ -173,6 +177,9 @@ char BeepCode[] = {0xA5,0x5A,0x03,0x80,0x02,0xC8};
 					 }
 				 }
 			 }
+			 else if(type == Timer2){
+				 page->onTimer();
+			 }
 		 }
 		 else{
 			 ext::ExeCommand cmd = ext::Keyboard::Scan();
@@ -186,6 +193,9 @@ char BeepCode[] = {0xA5,0x5A,0x03,0x80,0x02,0xC8};
 		 }
 		 
 		 delay_ms(200);
+		 
+		 axisDegree = ext::Fpga::Read(1) << 8 | ext::Fpga::Read(0);
+		 Setting::setMainAxisAngleInPulse(axisDegree);
 	}	
  }
 

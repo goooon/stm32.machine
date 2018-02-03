@@ -74,16 +74,22 @@ void PendSV_Handler(void)
 {
 }
  
-static unsigned int counter = 0;
+static unsigned int ticks_counter = 0;
+static void (*ticks_callback)(void) = 0;
+
+extern unsigned int GetSysTickCounter() { return ticks_counter; }
+extern void SetSysTickCallback(void (*callback)(void)){ ticks_callback = callback;}
+
 extern void CheckUartBufferIRQ(unsigned int ticks);
 void SysTick_Handler(void)
 {
-	counter++;
-	CheckUartBufferIRQ(counter);
+	ticks_counter++;
+	if(ticks_callback != 0){
+		ticks_callback();
+	}
+	CheckUartBufferIRQ(ticks_counter);
 }
 
-extern unsigned int GetSysTickCounter() { return counter; }
- 
 
 
 /******************************************************************************/

@@ -10,7 +10,6 @@ static s32 g_whellFixPulse;
 static s32 g_whellFixDist;
 static s32 g_RoundPerMin;
 static u32 g_MainAxisAngleInPulse;
-
 void Setting::initSetting(){
 	u8 temp[8] = {1,2,3,4,5,6,7,8};
   u8 read[8] = {0};
@@ -89,3 +88,4 @@ sint Setting::pulseToDistMM(sint pulse){
 	signed long dist = roundDist * pulse  / (signed long)getPulseCountPerCircle();
 	return dist;
 }
+		 

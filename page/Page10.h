@@ -23,6 +23,7 @@ public:
 			selection = 0;
 			selindex = 0;
 		  triIconAddr = 0x10D0;
+		  mainAxixDegreeAddr = 0x1000;
 			InputPage::enter();
 		
 		   u32 roundPerMin = Setting::getRoundPerMin();
