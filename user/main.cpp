@@ -55,8 +55,12 @@ void onExitInterupt(char port,char index){
 	char data = GPIO_ReadInputData(GPIOA) & 0xC0;
 	PostEvent(EXITR,data,index,0);
 }
-void onTimer2Callback(){
+void onTimer2Callback(void* ){
 	PostEvent(Timer2,0,0,0);
+}
+void onTimer7Callback(void* ){
+	Setting::incRoundPerMinTicks();
+	PostEvent(Timer1,0,0,0);
 }
 char uart3TxBuffer[1024];
 char uart3RxBuffer[1024];
@@ -82,31 +86,34 @@ char BeepCode[] = {0xA5,0x5A,0x03,0x80,0x02,0xC8};
  int main(void)
  {		
 	 
-	 Page* page = 0;
-	 ext::ExeCommand keycode = ext::None;
-	 Page* pages[] = {&page0,&page1,&page2,&page3,&page4,&page5,&page6,&page7,&page8,&page9,&page10,&page11,&page12};
 	 
-	 page = pages[0];
-	 page->enter();
 	 
 	u16 axisDegree = 0;
-	delay_init();	   	 	  //延时函数初始化	  
+	delay_init();	   	 	  //延时函数初始化	
+   Page* page = 0;
+	 Page* pages[] = {&page0,&page1,&page2,&page3,&page4,&page5,&page6,&page7,&page8,&page9,&page10,&page11,&page12};
+	 
+	 //page = pages[2];
+	 //page->handleEnter();
+	 
 	NVIC_Configuration(); //设置NVIC中断分组2:2位抢占优先级，2位响应优先级
 	UART3_Init(115200,onReceive3,uart3RxBuffer,1024, uart3TxBuffer,1024);	  //串口初始化为115200(调试用)
 	UART2_Init(115200,onReceive2,uart2RxBuffer,1024, uart2TxBuffer,1024);	  //串口初始化为115200(调试用)
  	ENCODER_Init(onExitInterupt);
 	ext::Led::Init();
 	ext::Fpga::Init();
+	lcd::reset();
 	 
   delay_ms(200);
 	LOG_I("HELLO Reset");
 	SysTick_Config(1024 * 1024 * 1);
 	Setting::initSetting();
 	ext::Keyboard::Init();
-	lcd::reset();
-	LOG_I("scan 0x%x",ext::Keyboard::Scan());
-	lcd::readCurrPage();
-	Timer2_Init(200,36000,onTimer2Callback);
+	
+	page = pages[0];
+	page->handleEnter();
+	Timer2_Init(200,36000,onTimer2Callback,0);
+	Timer7_Init(200,36000,onTimer7Callback,0);//0.01 s 
 	for(;;)
 	{
 		 u32 dec,hex;
@@ -147,6 +154,8 @@ char BeepCode[] = {0xA5,0x5A,0x03,0x80,0x02,0xC8};
 			 }
 			 else if(type == EXITR){
 				 LOG_I("interupt %d:0x%x",dec,hex>>6);
+				 axisDegree += (hex>>7);
+				 //test code, todo
 				 if(page == &page12){
 					 ((Page12*)page)->handleEncoder(hex>>7);
 				 }
@@ -164,39 +173,33 @@ char BeepCode[] = {0xA5,0x5A,0x03,0x80,0x02,0xC8};
 				 }
 				 else{
 					 if(page != pages[currpage]){
-						 page->leave();
+						 page->handleLeave();
 						 page = pages[currpage];
 						 LOG_I("page %d enter",currpage);
-						 page->enter();
-					 }
-					 if(keycode != ext::None){
-						 //lcd::sendKeycode(keycode);
-						 page->onKeyPressed(keycode);
-						 //ext::Led::SetLed(ext::Led::LED_1,false);
-						 keycode = ext::None;
+						 page->handleEnter();
 					 }
 				 }
 			 }
 			 else if(type == Timer2){
-				 page->onTimer();
+				 page->handleTimer();
+			 }
+			 else if(type == Timer1){
+				 //axisDegree = ext::Fpga::Read(1) << 8 | ext::Fpga::Read(0);
+				 //更新主轴角度
+				 Setting::setMainAxisAngleInPulse(axisDegree/4);
+				 //更新转速
+				 Setting::updateRoundPerMin(axisDegree);
 			 }
 		 }
 		 else{
 			 ext::ExeCommand cmd = ext::Keyboard::Scan();
 			 if(cmd != ext::None){
 					LOG_I("cmd %c[0x%x/%d]",cmd,cmd,cmd);
-				  //ext::Led::SetLed(ext::Led::LED_1,true);
-				  //keycode = page->onKeyPressed(cmd);
-				 keycode = cmd;
-				 lcd::readCurrPage();
+				  page->handleKeyPressed(cmd);
        }
+			 delay_ms(200);
 		 }
-		 
-		 delay_ms(200);
-		 
-		 axisDegree = ext::Fpga::Read(1) << 8 | ext::Fpga::Read(0);
-		 Setting::setMainAxisAngleInPulse(axisDegree);
-	}	
- }
+	 }	
+}
 
  

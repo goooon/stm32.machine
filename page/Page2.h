@@ -3,6 +3,7 @@
 #include "./Page.h"
 #include "../api/lcd.h"
 #include "../api/FPGA.h"
+#include "../setting/Setting.h"
 extern "C"{
 #include "../sys/delay.h"
 #include "../sys/usart.h"
@@ -10,7 +11,7 @@ extern "C"{
 class Page2 : public Page
 {
 public:
-	  Page2(){
+	  Page2():timeCounter(0){
 			  
 		}
 		virtual void enter(){
@@ -19,9 +20,14 @@ public:
 		}
 		virtual void onTimer(){
 			  timeCounter++;
-			  LOG_I("onTimer");
-			  if(timeCounter >= 1000){
-					lcd::jumpToPage(3);
+			  if(timeCounter >= 20){
+					if(Setting::needPresetParameters()){
+						lcd::jumpToPage(4);
+					}
+					else{
+						lcd::jumpToPage(3);
+					}
+					timeCounter = 0;
 				}
 		}
 		virtual ext::ExeCommand onKeyPressed(ext::ExeCommand cmd)

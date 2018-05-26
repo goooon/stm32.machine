@@ -24,6 +24,23 @@
 class Page
 {
 public:
+	  Page():shouldHandle(false){}
+	  void handleEnter(){
+			enter();
+			shouldHandle = true;
+		}
+    void handleLeave(){
+			shouldHandle = false;
+      leave();
+    }
+    void handleTimer(){ if(shouldHandle)return onTimer();}
+    ext::ExeCommand handleKeyPressed(ext::ExeCommand cmd){
+			if(!shouldHandle){
+				return ext::None;
+			}
+			return onKeyPressed(cmd);
+		}
+protected:
 	  virtual void enter(){}
 		virtual void leave(){}
 		virtual void onTimer(){}
@@ -36,5 +53,7 @@ public:
 				}
 			return cmd;
 		};
+private:
+	  bool shouldHandle;
 };
 #endif

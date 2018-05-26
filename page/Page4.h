@@ -1,6 +1,7 @@
 #ifndef ZLG_PAGE4_HH
 #define ZLG_PAGE4_HH
 #include "./Page.h"
+#include "../setting/Setting.h"
 #include "../api/lcd.h"
 class Page4 : public Page
 {
@@ -33,6 +34,7 @@ public:
 						break;
 					case ext::CMD_Input:
 						lcd::jumpToPage(index == 0 ?  7 : 8);
+					  Setting::setConfigToothType( index == 0 ? Male : Female);
 					  return ext::None;
 						break;
 					case ext::CMD_FanHui:

@@ -49,7 +49,7 @@ int tool::convertPulseToAngle(u32 pulse,u32 circulePulses,short unicode[],uint s
 	  pulse %= circulePulses;
 	  u32 c = pulse * 360 * 60 * 60;
 	  u32 out = c / circulePulses;
-	  LOG_I("total degree %d out %d",c,out);
+	  //LOG_I("total degree %d out %d",c,out);
 	  u32 s = out % 60;
 	  u32 m = (out / 60 ) % 60;
 	  u32 d = out / 3600;
@@ -65,7 +65,7 @@ int tool::convertPulseToAngle(u32 pulse,u32 circulePulses,short unicode[],uint s
 	  r = convertFixed(s,0,unicode,size,false,0x2033);
 	  unicode[r] = 0xffff;
 	  r++;
-	  LOG_I("return total %d",total + r);
+	  //LOG_I("return total %d",total + r);
 	  return total + r;
 }
 

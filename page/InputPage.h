@@ -15,20 +15,17 @@ public:
 		virtual void enter(){
 			editing = false;
 			testCount = 0;
+			rotateCount = 0;
 			selection = 8;
 			selindex = 3;
 			for(int i = 0; i < ARRAY_SIZE(input); i ++){
-				inputNumb[i] = 0;
-				for(int j = 0; j < ARRAY_SIZE(input[0]); ++ j){
-					//input[i][j] = '0';
-				}
-				input[i][0] = '0';
+				/*input[i][0] = '0';
 				input[i][1] = '.';
 				input[i][2] = '0';
 				input[i][3] = '0';
-				input[i][4] = 0xffff;
-				//lcd::displayUnicode(inputAddr[i],input[i],inputlen[i] + 1);
-				displayMeasured(i);
+				input[i][4] = 0xffff;*/
+				dotNumbToUnicode(i);
+				//displayMeasured(i);
 			}
 			lcd::sendAddrValue(focusBoxAddr,0);
 			displayMainAxisDegree();
@@ -36,13 +33,24 @@ public:
 		}
 		void displayAll(){
 			for(int i = 0; i < ARRAY_SIZE(input); i ++){
-				//lcd::displayUnicode(inputAddr[i],input[i],inputlen[i] + 1);
+				//lcd::displayUnicode(inputPulseAddr[i],input[i],inputlen[i] + 1);
 				displayMeasured(i);
+				delay_ms(20);
+				displayFixedDigree(i);
+				delay_ms(20);
 				displayFixedPulse(i);
+				delay_ms(20);
 			}
 			displayMainAxisDegree();
 		}
-		//脉冲距离
+		//距离对应的角度
+		void displayFixedDigree(int index){
+			  short code[20];
+			  int pulseToFix = calcDegreePulse(inputNumb[index]);
+				int i = tool::convertPulseToAngle(pulseToFix,1024,code,ARRAY_SIZE(code));
+				lcd::displayUnicode(inputDegreeAddr[index],code,i);
+		}
+		//距离对应的脉冲个数
 		void displayFixedPulse(int index){
 			  short code[20];
 			  char offset[] = {31,27,23,19,15,11,7,3,0,0,0,0,0};
@@ -54,28 +62,21 @@ public:
 				code[len++] = 0xffff;
 			  lcd::sendAddrValue(pulseBaseAddr - index * 0x100,342 + offset[len - 4],185 - 16 * index);
 				//lcd::sendAddrValue(0xA301,343 + offset[len - 4],184 - 16 * index);
-				lcd::displayUnicode(inputAddr[index] + 0x20,code,len);
+				lcd::displayUnicode(inputPulseAddr[index] + 0x20,code,len);
 		}
+		
 		void displayMainAxisDegree(){
 			//主轴角度
 			short code[20];
 			u32 c = Setting::getMainAxisAngleInPulse();
-			int i = tool::convertPulseToAngle(c,100,code,ARRAY_SIZE(code));
+			int i = tool::convertPulseToAngle(c,1024,code,ARRAY_SIZE(code));
 			lcd::displayUnicode(mainAxixDegreeAddr,code,i);
-		}
-		void onTimer(){
-			//主轴角度
-			short code[20];
-			u32 c = Setting::getMainAxisAngleInPulse();
-			int i = tool::convertPulseToAngle(c,100,code,ARRAY_SIZE(code));
-			lcd::displayUnicode(mainAxixDegreeAddr,code,i);
-			LOG_I("Timer2 Trigger: axis pulse %d",c);
 		}
 		//测量距离
 		void displayMeasured(int index){
 			char offset[] = {28,24,20,16,12,8,4,0,0,0,0,0,0,0,0,0};
 			lcd::sendAddrValue(measureBassAddr - index * 0x100,134 + offset[inputlen[index]],185 - 16 * index);
-			lcd::displayUnicode(inputAddr[index],input[index],inputlen[index] + 1);
+			lcd::displayUnicode(inputPulseAddr[index],input[index],inputlen[index] + 1);
 		}
 		virtual ext::ExeCommand onKeyPressed(ext::ExeCommand cmd)
 		{
@@ -119,7 +120,7 @@ public:
 								input[selindex][inputlen[selindex]] = (short)cmd;
 								inputlen[selindex]++;
 								input[selindex][inputlen[selindex]] = 0xFFFF;
-								//lcd::displayUnicode(inputAddr[selindex],input[selindex],inputlen[selindex] + 1);
+								//lcd::displayUnicode(inputPulseAddr[selindex],input[selindex],inputlen[selindex] + 1);
 								displayMeasured(selindex);
 						  }
 							break;
@@ -130,13 +131,13 @@ public:
 								if(inputlen[selindex] != 0){
 									input[selindex][inputlen[selindex]] = 0xFFFF;
 									inputNumb[selindex] = inputNumb[selindex] / 10;
-									//lcd::displayUnicode(inputAddr[selindex],input[selindex],inputlen[selindex] + 1);
+									//lcd::displayUnicode(inputPulseAddr[selindex],input[selindex],inputlen[selindex] + 1);
 									displayMeasured(selindex);
 								}
 								else{
 									input[selindex][0] = 0xFFFF;
 									inputNumb[selindex] = 0;
-									//lcd::displayUnicode(inputAddr[selindex],input[selindex],inputlen[selindex] + 1);
+									//lcd::displayUnicode(inputPulseAddr[selindex],input[selindex],inputlen[selindex] + 1);
 									displayMeasured(selindex);
 								}
 							}
@@ -150,7 +151,7 @@ public:
 					  case ext::CMD_Measure:
 							editing = true;
 							lcd::sendAddrValue(focusBoxAddr,selection);
-						  //lcd::displayUnicode(inputAddr[selindex],input[selindex],inputlen[selindex] + 1);
+						  //lcd::displayUnicode(inputPulseAddr[selindex],input[selindex],inputlen[selindex] + 1);
 						  displayMeasured(selindex);
 							break; 
 						case ext::CMD_RepeatMeas:
@@ -159,12 +160,13 @@ public:
 							inputNumb[selindex] = 0;
 						  input[selindex][0] = 0xFFFF;
 						  lcd::sendAddrValue(focusBoxAddr,selection);
-						  //lcd::displayUnicode(inputAddr[selindex],input[selindex],inputlen[selindex] + 1);
+						  //lcd::displayUnicode(inputPulseAddr[selindex],input[selindex],inputlen[selindex] + 1);
 						  displayMeasured(selindex);
 							break;
 						case ext::CMD_Up:
 							if(editing){
 								checkAndFillInput(selindex);
+								displayFixedDigree(selindex);
 								displayFixedPulse(selindex);
 								editing = false;
 							}
@@ -177,6 +179,7 @@ public:
 						case ext::CMD_Dn:
 							if(editing){
 								checkAndFillInput(selindex);
+								displayFixedDigree(selindex);
 								displayFixedPulse(selindex);
 								editing = false;
 							}
@@ -208,10 +211,12 @@ public:
 				 if(input[selindex][0] == '.'){
 						input[selindex][2] = '0';
 						inputlen[selindex] = 3;
+					 inputNumb[selindex] = inputNumb[selindex] * 10;
 				 }
 				 else if(input[selindex][1] == '.'){
 						input[selindex][2] = '0';
 						inputlen[selindex] = 3;
+					 inputNumb[selindex] = inputNumb[selindex] * 10;
 				 }
 				 else{
 					  input[selindex][2] = '.';
@@ -235,23 +240,25 @@ public:
 						input[selindex][inputlen[selindex]] = '0';
 						inputlen[selindex] ++;
 						input[selindex][inputlen[selindex]] = 0xFFFF;
-						//lcd::displayUnicode(inputAddr[selindex],input[selindex],inputlen[selindex] + 1);
-						displayMeasured(selindex);
 						inputNumb[selindex] = inputNumb[selindex] * 10;
 					}
 				}
 				dotNumbToUnicode(index);
+				displayMeasured(selindex);
 		}
 		void handleEncoder(char dir){
 			 if(dir)testCount += 1;
 			 else testCount -= 1;
-			 Setting::setMainAxisAngleInPulse(testCount);
 			 for(int i = 0; i < 4; i ++){
 				 Setting::setInput(i,testCount);
 				 inputNumb[i] = testCount;
 				 dotNumbToUnicode(i);
 			 }
 			 displayAll();
+		}
+		void onTimer(){
+			//主轴角度
+			displayMainAxisDegree();		
 		}
 		void dotNumbToUnicode(int index){
 			  u32 times = 1000000000;
@@ -299,14 +306,16 @@ public:
 			 return fixedForToothPulse;
 		}
 		protected:
-			int testCount;
+			int  testCount;
+		  int  rotateCount;
 			bool editing;
 			char selection;
 		  char selindex;
 		  int   inputlen[4];
 		  short input[4][MAX_INPUT_LEN + 2];
 		  unsigned long inputNumb[4];
-		  short inputAddr[4];
+		  short inputPulseAddr[4];
+		  short inputDegreeAddr[4];
 		  short triIconAddr;
 		  short focusBoxAddr;
 		  short mainAxixDegreeAddr;

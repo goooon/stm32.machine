@@ -5,6 +5,8 @@
 #include "../api/Tool.h"
 #include "../setting/Setting.h"
 //手轮调整
+void callback(void){
+}
 class Page12 : public Page
 {
 public:
@@ -19,6 +21,7 @@ public:
 		index = 1;
 		updateIcon();
 		display();
+		//Timer7_Init(2000,36000,callback,0);
 	}
 	virtual void leave(){
 	}
@@ -39,6 +42,7 @@ public:
 						  updateIcon();
 							break;
 					  case ext::CMD_FanHui:
+						case ext::CMD_Enter:
 							Setting::setWhellFixPulse(Setting::pulseToDistMM(count),count);
 							lcd::jumpToPage(6);
 							break;
@@ -95,12 +99,14 @@ public:
 			 }
 			 lcd::displayUnicode(0x1240,code,i);
 			 //Z轴调整距离
-			 int len = tool::convertFixed(Setting::pulseToDistMM(count),100,code,20);
+			 int len = tool::convertFixed(count * 6250 / 1024,1000,code,20);
 			 lcd::displayUnicode(0x1280,code,len);
 		}
 		void handleEncoder(char dir){
 			 if(dir)count += index;
 			 else count -= index;
+			 if(count > 512)count = 512;
+			 if(count < -512)count = -512;
 			 //lcd::sendAddrValue(0x1240,count);
 			 //short code[] = {0x002b,0x0031,0x002d,0x0032,0x0033,0x0034,0x4f60,0x597d};
 			 display();

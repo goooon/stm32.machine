@@ -36,7 +36,7 @@
 //在delay_us加入ucos上锁，防止由于ucos打断delay_us的执行，可能导致的延时不准。
 ////////////////////////////////////////////////////////////////////////////////// 	 
 static u8  fac_us=0;//us延时倍乘数
-static u16 fac_ms=0;//ms延时倍乘数
+static u32 fac_ms=0;//ms延时倍乘数
 #ifdef OS_CRITICAL_METHOD 	//如果OS_CRITICAL_METHOD定义了,说明使用ucosII了.
 //systick中断服务函数,使用ucos时用到
 void SysTick_Handler(void)

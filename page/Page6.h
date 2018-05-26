@@ -4,6 +4,7 @@
 #include "../api/lcd.h"
 #include "../setting/Setting.h"
 #include "../api/Tool.h"
+#include "../api/FPGA.h"
 class Page6 : public Page
 {
 public:
@@ -19,7 +20,7 @@ public:
 			  short code[20];
 			  u32 measureDist,measurePuls;
 			  s32 whellDist,whellPulse;
-			  Setting::getMeasureFixPulse(measureDist,measurePuls);
+			  
 			  Setting::getWhellFixPulse(whellDist,whellPulse);
 			  //机床转速
 			  int i = tool::convertFixed(r,0,code,20,false);
@@ -30,9 +31,10 @@ public:
 			  code[i++] = 0xffff;
 			  lcd::displayUnicode(0x610,code,i);
 			  //主轴角度
-			  i = tool::convertPulseToAngle(count,100,code,ARRAY_SIZE(code));
+			  i = tool::convertPulseToAngle(a,1024,code,ARRAY_SIZE(code));
 			  lcd::displayUnicode(0x620,code,i);
 			  //测量修正
+			  Setting::getMeasureFixPulse(measureDist,measurePuls);
 			  i = tool::convertFixed(measureDist,100,code,20);
 			  i--;
 			  code[i++] = 'm';
@@ -66,7 +68,10 @@ public:
 			  code[i++] = 'm';
 			  code[i++] = 0xffff;
 			  lcd::displayUnicode(0x690,code,i);
-				i = tool::convertFixed(measurePuls + whellPulse,0,code,20);
+				total = measurePuls + whellPulse;
+				total %= 1024;
+				if(total < 0)total += 1024;
+				i = tool::convertFixed(total,0,code,20);
 			  i--;
 			  code[i++] = 0x8109;
 			  code[i++] = 0x51b2;
@@ -79,7 +84,7 @@ public:
 			LOG_I("key pressed:%c/0x%x",cmd,cmd);
 			switch(cmd){
 				  case ext::CMD_FanHui:
-						lcd::jumpToPage(3);
+						lcd::jumpToPage(5);
 						return ext::None;
 						break;
 					case ext::CMD_KnifeFix:
@@ -91,6 +96,10 @@ public:
 						return ext::None;
 						break;
 					case ext::CMD_Start:
+						ext::Fpga::Write(2,(u8)total);
+					  ext::Fpga::Write(2,(u8)(total >> 8));
+					  ext::Fpga::Write(15,2);
+					  LOG_I("start product 0x%x",total);
 						return ext::None;
 						break;
 					case ext::CMD_Stop:
@@ -100,11 +109,17 @@ public:
 			return cmd;
 		}
 		void handleEncoder(char dir){
-			 if(dir)count += 1;
-			 else count -= 1;
-			 display(count,count);
+			 //if(dir)count += 1;
+			 //else count -= 1;
+			 //display(count,count);
+		}
+		void onTimer(){
+			 u32 roundPerMin = Setting::getRoundPerMin();
+			 u32 angle = Setting::getMainAxisAngleInPulse();
+			 display(roundPerMin,angle);
+			 LOG_I("Timer2 Trigger: axis pulse %d",angle);
 		}
 	private:
-		u32 count;
+	  s32 total;
 };
 #endif

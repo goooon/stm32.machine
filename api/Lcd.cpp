@@ -14,7 +14,10 @@ void lcd::readCurrPage(){
 		void lcd::jumpToPage(short page){
 			char PageCode[] = {0xA5,0x5A,0x04,0x80,0x03,*(1 + (char*)&page),*(char*)&page};
 			UART2_SendBuffer((u8*)PageCode,ARRAY_SIZE(PageCode));
+			delay_ms(100);
 			readCurrPage();
+			PostEvent(PAGE,page,page,0);
+			PostEvent(PAGE,page,page,0);
 		}
 		void lcd::jumpToPageDirect(short page){
 			char PageCode[] = {0xA5,0x5A,0x04,0x80,0x03,*(1 + (char*)&page),*(char*)&page};

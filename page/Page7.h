@@ -35,7 +35,7 @@ public:
 					  return ext::None;
 						break;
 					case ext::CMD_Input:
-						Setting::setIsMale(index == 0 ? true : false);
+						Setting::setConfigToothType(index == 0 ? Male : Female);
 						lcd::jumpToPage(9);
 					  return ext::None;
 						break;

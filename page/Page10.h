@@ -10,25 +10,32 @@ public:
 	virtual void enter(){
 		  editing = false;
 		  pulseBaseAddr = 0x3301;
-		  measureBassAddr = 0x5301;
+		  measureBassAddr = 0x8301;
 		  focusBoxAddr = 0x10E0;
-			inputAddr[3] = 0x1010;
-			inputAddr[2] = 0x1040;
-			inputAddr[1] = 0x1070;
-			inputAddr[0] = 0x10a0;
+			inputPulseAddr[3] = 0x1010;
+			inputPulseAddr[2] = 0x1040;
+			inputPulseAddr[1] = 0x1070;
+			inputPulseAddr[0] = 0x10a0;
+		  inputDegreeAddr[3] = 0x1020;
+		  inputDegreeAddr[2] = 0x1050;
+		  inputDegreeAddr[1] = 0x1080;
+		  inputDegreeAddr[0] = 0x10b0;
 			inputlen[0] = 4;
 			inputlen[1] = 4;
 			inputlen[2] = 4;
 			inputlen[3] = 4;
+		  inputNumb[0] = Setting::getConfigInput(0);
+		  inputNumb[1] = Setting::getConfigInput(1);
+		  inputNumb[2] = Setting::getConfigInput(2);
+		  inputNumb[3] = Setting::getConfigInput(3);
 			selection = 0;
 			selindex = 0;
 		  triIconAddr = 0x10D0;
 		  mainAxixDegreeAddr = 0x1000;
 			InputPage::enter();
-		
-		   u32 roundPerMin = Setting::getRoundPerMin();
-			 u32 angle = Setting::getMainAxisAngleInPulse();
-			 display(angle);
+			displayAll();
+			u32 angle = Setting::getMainAxisAngleInPulse();
+			display(angle);
 	}
 	/*void displayItem(int item){
 		int i = 0;
@@ -64,6 +71,16 @@ public:
 			switch(cmd){
 				  case ext::CMD_FanHui:
 							lcd::jumpToPage(9);
+							return ext::None;
+					case ext::CMD_Input:
+							editing = false;
+						  Setting::setMeasureFixPulse(inputNumb[selindex],calcDegreePulse(inputNumb[selindex]));
+					    Setting::setConfigInput(0,inputNumb[0]);
+					    Setting::setConfigInput(1,inputNumb[1]);
+					    Setting::setConfigInput(2,inputNumb[2]);
+					    Setting::setConfigInput(3,inputNumb[3]);
+							Setting::saveToFlash();
+							lcd::jumpToPage(3);
 							return ext::None;
 					default:
 						InputPage::onKeyPressed(cmd);

@@ -622,11 +622,6 @@
               <FilePath>..\api\Queue.h</FilePath>
             </File>
             <File>
-              <FileName>Timer.cpp</FileName>
-              <FileType>8</FileType>
-              <FilePath>..\api\Timer.cpp</FilePath>
-            </File>
-            <File>
               <FileName>Timer.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\api\Timer.h</FilePath>
@@ -670,6 +665,21 @@
               <FileName>Tool.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\api\Tool.h</FilePath>
+            </File>
+            <File>
+              <FileName>Timer.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\api\Timer.c</FilePath>
+            </File>
+            <File>
+              <FileName>FPGA.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\api\FPGA.cpp</FilePath>
+            </File>
+            <File>
+              <FileName>Led.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\api\Led.cpp</FilePath>
             </File>
           </Files>
         </Group>

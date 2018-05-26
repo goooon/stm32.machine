@@ -18,18 +18,27 @@ public:
 			pulseBaseAddr = 0x2301;
 			measureBassAddr = 0x4301;
 			focusBoxAddr = 0x508;
-			inputAddr[3] = 0x520;
-			inputAddr[2] = 0x550;
-			inputAddr[1] = 0x580;
-			inputAddr[0] = 0x5B0;
+			inputPulseAddr[3] = 0x520;
+			inputPulseAddr[2] = 0x550;
+			inputPulseAddr[1] = 0x580;
+			inputPulseAddr[0] = 0x5B0;
+			inputDegreeAddr[3] = 0x530;
+		  inputDegreeAddr[2] = 0x560;
+		  inputDegreeAddr[1] = 0x590;
+		  inputDegreeAddr[0] = 0x5C0;
 			inputlen[0] = 4;
 			inputlen[1] = 4;
 			inputlen[2] = 4;
 			inputlen[3] = 4;
+			inputNumb[0] = Setting::getConfigInput(0);
+		  inputNumb[1] = Setting::getConfigInput(1);
+		  inputNumb[2] = Setting::getConfigInput(2);
+		  inputNumb[3] = Setting::getConfigInput(3);
 			triIconAddr = 0x5E0;
 			mainAxixDegreeAddr = 0x510;
 			displayRotateSpeed();
 			InputPage::enter();
+			displayAll();
 		}
 		void displayRotateSpeed(){
 			 //»ú´²×ªËÙ
@@ -42,6 +51,10 @@ public:
 			code[i++] = 0x5206;
 			code[i++] = 0xffff;
 			lcd::displayUnicode(0x500,code,i);
+		}
+		void onTimer(){
+			InputPage::onTimer();
+			displayRotateSpeed();
 		}
 		virtual ext::ExeCommand onKeyPressed(ext::ExeCommand cmd)
 		{
@@ -66,7 +79,6 @@ public:
 							break;
 						case ext::CMD_Up:
 							InputPage::onKeyPressed(cmd);
-							
 							break;
 						case ext::CMD_Dn:
 							InputPage::onKeyPressed(cmd);

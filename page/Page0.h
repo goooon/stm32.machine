@@ -5,5 +5,16 @@
 class Page0 : public Page
 {
 public:
+	Page0():timeCounter(0){}
+	virtual void onTimer(){
+			  timeCounter++;
+			  LOG_I("onTimer");
+			  if(timeCounter >= 50){
+					lcd::jumpToPage(1);
+					timeCounter = 0;
+				}
+		}
+private:
+		u32 timeCounter;
 };
 #endif
