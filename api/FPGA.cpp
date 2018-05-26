@@ -1,5 +1,8 @@
+#include <stm32f10x.h>
+#include <stm32f10x.h>
 #include "Fpga.h"
 using namespace ext;
+
 bool Fpga::Init(){
 			RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOE, ENABLE);
 			RCC_APB2PeriphResetCmd(RCC_APB2Periph_GPIOE, DISABLE);
@@ -70,8 +73,9 @@ void setInputMode(){
 void Fpga::Write(u8 addr,u8 data){
 	SetIODisable();
 	SetAddr(addr);
-	SetWriteEnable();
 	SetData(data);
+	SetWriteEnable();
+	SetIODisable();
 	return;
 }
 u8  Fpga::Read(u8 addr){
@@ -80,6 +84,7 @@ u8  Fpga::Read(u8 addr){
 	SetAddr(addr);
 	SetReadEnable();
 	ret = GetData();
+	SetIODisable();
 	return ret;
 }
 				

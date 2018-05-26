@@ -85,6 +85,7 @@ public:
 			switch(cmd){
 				  case ext::CMD_FanHui:
 						lcd::jumpToPage(5);
+						FPGA_CONFIG();
 						return ext::None;
 						break;
 					case ext::CMD_KnifeFix:
@@ -96,13 +97,16 @@ public:
 						return ext::None;
 						break;
 					case ext::CMD_Start:
-						ext::Fpga::Write(2,(u8)total);
-					  ext::Fpga::Write(2,(u8)(total >> 8));
-					  ext::Fpga::Write(15,2);
-					  LOG_I("start product 0x%x",total);
+						FPGA_CONFIG();
+						FPGA_SET_DELAYED_PULSE(total);
+					  FPGA_START_WORKING();
+					  LOG_I("start working 0x%x",total);
 						return ext::None;
 						break;
 					case ext::CMD_Stop:
+						FPGA_SET_DELAYED_PULSE(0);
+					  FPGA_RESET();
+					  LOG_I("reset fpga 0x%x",total);
 						return ext::None;
 						break;
 				}
@@ -117,7 +121,7 @@ public:
 			 u32 roundPerMin = Setting::getRoundPerMin();
 			 u32 angle = Setting::getMainAxisAngleInPulse();
 			 display(roundPerMin,angle);
-			 LOG_I("Timer2 Trigger: axis pulse %d",angle);
+			 //LOG_I("Timer2 Trigger: axis pulse %d",angle);
 		}
 	private:
 	  s32 total;

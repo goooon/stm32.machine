@@ -24,6 +24,9 @@ struct Config{
 static Config config;
 static bool needPreset;
 void Setting::initSetting(){
+	
+	//I2C2_Config();
+	//I2C_PageWrite_AT24C01A_02(0,0,(u8*)&config,sizeof(config));
 	/*u8 temp[8] = {1,2,3,4,5,6,7,8};
   u8 read[8] = {0};
 	I2C1_init();
