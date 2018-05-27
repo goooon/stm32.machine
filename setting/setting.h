@@ -1,7 +1,7 @@
 #ifndef ZLG_Setting_HH
 #define ZLG_Setting_HH
 #include "../api/lcd.h"
-#define PULSE_PER_AXIS_ROUND 100
+#define PULSE_PER_AXIS_ROUND 1024
 enum ToothType{
 	None,
 	Male,
@@ -35,7 +35,8 @@ public:
    static s32  getRoundPerMin();
 	 static void resetRoundPerMin();
 	 static void incRoundPerMinTicks();
-	 static void updateRoundPerMin(u16 pulseIn4096);
+	 static u32  getRoundPerMinTicks();
+	 static void updateRoundPerMin(u32 ticks, u16 pulseIn4096);
 	 
 	 static bool needPresetParameters();
 };

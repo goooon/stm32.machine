@@ -34,8 +34,8 @@ public:
 		  mainAxixDegreeAddr = 0x1000;
 			InputPage::enter();
 			displayAll();
-			u32 angle = Setting::getMainAxisAngleInPulse();
-			display(angle);
+			//u32 angle = Setting::getMainAxisAngleInPulse();
+			//display(angle);
 	}
 	/*void displayItem(int item){
 		int i = 0;
@@ -58,13 +58,13 @@ public:
 		lcd::displayUnicode(addr[item] + 0x20,code,i);
 	}*/
 	
-	void display(u32 angle){
+	/*void display(u32 angle){
 		int i;
 		short code[20];
 		//Ö÷Öá½Ç¶È
 		i = tool::convertPulseToAngle(angle,PULSE_PER_AXIS_ROUND,code,ARRAY_SIZE(code));
 		lcd::displayUnicode(0x1000,code,i);
-	}
+	}*/
 	virtual ext::ExeCommand onKeyPressed(ext::ExeCommand cmd)
 	{
 		LOG_I("key pressed:%c",cmd);

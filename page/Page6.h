@@ -82,6 +82,7 @@ public:
 		virtual ext::ExeCommand onKeyPressed(ext::ExeCommand cmd)
 		{
 			LOG_I("key pressed:%c/0x%x",cmd,cmd);
+			u8 data;
 			switch(cmd){
 				  case ext::CMD_FanHui:
 						lcd::jumpToPage(5);
@@ -108,6 +109,50 @@ public:
 					  FPGA_RESET();
 					  LOG_I("reset fpga 0x%x",total);
 						return ext::None;
+					//
+					case ext::Numb_0:
+							data = ext::Fpga::Read(0);
+						  LOG_I("read 0x%x",data);
+						  break;
+						 case ext::Numb_1:
+							data = ext::Fpga::Read(1);
+						  LOG_I("read 0x%x",data);
+						  break;
+						 case ext::Numb_2:
+						  ext::Fpga::Write(2,total);
+						  LOG_I("addr 2 write:0x%x",(u8)total);
+						  break;
+						 case ext::Numb_3:
+							ext::Fpga::Write(3,total>>8);
+						  LOG_I("addr 3 write:0x%x",total>>8);
+						  break;
+						 case ext::Numb_4:
+							data = ext::Fpga::Read(2);
+						  LOG_I("read from addr 2: 0x%x",data);
+						  break;
+						 case ext::Numb_5:
+							data = ext::Fpga::Read(3);
+						  LOG_I("read from addr 3: 0x%x",data);
+						  break;
+						 case ext::Numb_6:
+							ext::Fpga::Write(15,0);
+						  LOG_I("addr 15 write:0");
+						  break;
+						 case ext::Numb_7:
+							ext::Fpga::Write(15,1);
+						  LOG_I("addr 15 write:1");
+						  break;
+						 case ext::Numb_8:
+							ext::Fpga::Write(15,2);
+						  LOG_I("addr 15 write:2");
+						  break;
+						 case ext::Numb_9:
+							data = ext::Fpga::Read(15);
+						  LOG_I("read from addr 0xf: 0x%x",data);
+						  break;
+						 case ext::Numb_Dot:
+							ext::Fpga::Write(2,total);
+						  ext::Fpga::Write(3,total>>8);
 						break;
 				}
 			return cmd;

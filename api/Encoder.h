@@ -2,6 +2,6 @@
 #define __STM32F10x_ENCODER_H
 #include "../sys/delay.h"
 #include "../sys/usart.h"	
-void ENCODER_Init(void (*onExitInterupt)(char,char));
+u8 ENCODER_Init(void (*onExitInterupt)(char,char));
 
 #endif

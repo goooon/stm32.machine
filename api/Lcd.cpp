@@ -8,7 +8,7 @@ void lcd::reset(){
 }
 void lcd::readCurrPage(){
 			char PageCode[] = {0xA5,0x5A,0x03,0x81,0x03,0x02};
-			LOG_I("read page");
+			//LOG_I("read page");
 			UART2_SendBuffer((u8*)PageCode,ARRAY_SIZE(PageCode));
 		}
 		void lcd::jumpToPage(short page){
@@ -47,31 +47,31 @@ void lcd::readCurrPage(){
 		void lcd::sendAddrValue(short addr,short value){
 			//A55A05820508000F
 			char AddrValue[] = {0xA5,0x5A,0x05,0x82,*(1 + (char*)&addr),*(char*)&addr,*(1 + (char*)&value),*(char*)&value};
-			LOG_P("lcd send :%d  ",ARRAY_SIZE(AddrValue));
+			//LOG_P("lcd send :%d  ",ARRAY_SIZE(AddrValue));
 				 for(int i = 0;i < ARRAY_SIZE(AddrValue); ++i){
-					 LOG_P("0x%x ",((char*)AddrValue)[i]);
+					 //LOG_P("0x%x ",((char*)AddrValue)[i]);
 				 }
-				 LOG_P("\r\n");
+				 //LOG_P("\r\n");
 			UART2_SendBuffer((u8*)AddrValue,ARRAY_SIZE(AddrValue));
 		}
 		void lcd::sendAddrValue(short addr,short value1,short value2){
 			//A55A05820508000F
 			char AddrValue[] = {0xA5,0x5A,0x05,0x82,*(1 + (char*)&addr),*(char*)&addr,*(1 + (char*)&value1),*(char*)&value1,*(1 + (char*)&value2),*(char*)&value2};
-			LOG_P("lcd send :%d  ",ARRAY_SIZE(AddrValue));
+			//LOG_P("lcd send :%d  ",ARRAY_SIZE(AddrValue));
 				 for(int i = 0;i < ARRAY_SIZE(AddrValue); ++i){
-					 LOG_P("0x%x ",((char*)AddrValue)[i]);
+					 //LOG_P("0x%x ",((char*)AddrValue)[i]);
 				 }
-				 LOG_P("\r\n");
+				 //LOG_P("\r\n");
 			UART2_SendBuffer((u8*)AddrValue,ARRAY_SIZE(AddrValue));
 		}
 		void lcd::sendAddrValueLong(short addr,unsigned long value){
 			//A55A05820508000F
 			char AddrValue[] = {0xA5,0x5A,0x07,0x82,*(1 + (char*)&addr),*(char*)&addr,*(3 + (char*)&value),*(2 + (char*)&value),*(1 + (char*)&value),*(char*)&value};
-			LOG_P("lcd send :%d  ",ARRAY_SIZE(AddrValue));
+			//LOG_P("lcd send :%d  ",ARRAY_SIZE(AddrValue));
 				 for(int i = 0;i < ARRAY_SIZE(AddrValue); ++i){
-					 LOG_P("0x%x ",((char*)AddrValue)[i]);
+					 //LOG_P("0x%x ",((char*)AddrValue)[i]);
 				 }
-				 LOG_P("\r\n");
+				 //LOG_P("\r\n");
 			UART2_SendBuffer((u8*)AddrValue,ARRAY_SIZE(AddrValue));
 		}
 void lcd::displayUnicode(short addr,short* buff,short len){
@@ -118,7 +118,7 @@ void lcd::displayUnicode(short addr,short* buff,short len){
 				pd++;
 				buff++;
 			}
-			LOG_BUFF("display buff:",buff,len * 2);
-			LOG_BUFF("display Unicode:",Unicode,totalLen + 3);
+			//LOG_BUFF("display buff:",buff,len * 2);
+			//LOG_BUFF("display Unicode:",Unicode,totalLen + 3);
 			UART2_SendBuffer((u8*)Unicode,totalLen + 3);
 		}

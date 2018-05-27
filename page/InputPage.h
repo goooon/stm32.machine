@@ -43,6 +43,12 @@ public:
 			}
 			displayMainAxisDegree();
 		}
+		//测量距离
+		void displayMeasured(int index){
+			char offset[] = {28,24,20,16,12,8,4,0,0,0,0,0,0,0,0,0};
+			lcd::sendAddrValue(measureBassAddr - index * 0x100,134 + offset[inputlen[index]],185 - 16 * index);
+			lcd::displayUnicode(inputPulseAddr[index],input[index],inputlen[index] + 1);
+		}
 		//距离对应的角度
 		void displayFixedDigree(int index){
 			  short code[20];
@@ -71,12 +77,6 @@ public:
 			u32 c = Setting::getMainAxisAngleInPulse();
 			int i = tool::convertPulseToAngle(c,1024,code,ARRAY_SIZE(code));
 			lcd::displayUnicode(mainAxixDegreeAddr,code,i);
-		}
-		//测量距离
-		void displayMeasured(int index){
-			char offset[] = {28,24,20,16,12,8,4,0,0,0,0,0,0,0,0,0};
-			lcd::sendAddrValue(measureBassAddr - index * 0x100,134 + offset[inputlen[index]],185 - 16 * index);
-			lcd::displayUnicode(inputPulseAddr[index],input[index],inputlen[index] + 1);
 		}
 		virtual ext::ExeCommand onKeyPressed(ext::ExeCommand cmd)
 		{
@@ -247,14 +247,14 @@ public:
 				displayMeasured(selindex);
 		}
 		void handleEncoder(char dir){
-			 if(dir)testCount += 1;
+			 /*if(dir)testCount += 1;
 			 else testCount -= 1;
 			 for(int i = 0; i < 4; i ++){
 				 Setting::setInput(i,testCount);
 				 inputNumb[i] = testCount;
 				 dotNumbToUnicode(i);
 			 }
-			 displayAll();
+			 displayAll();*/
 		}
 		void onTimer(){
 			//主轴角度

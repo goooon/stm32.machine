@@ -34,6 +34,7 @@ public:
 		  inputNumb[1] = Setting::getConfigInput(1);
 		  inputNumb[2] = Setting::getConfigInput(2);
 		  inputNumb[3] = Setting::getConfigInput(3);
+			LOG_I("dist stored is:%d,%d,%d,%d",inputNumb[3],inputNumb[2],inputNumb[1],inputNumb[0]);
 			triIconAddr = 0x5E0;
 			mainAxixDegreeAddr = 0x510;
 			displayRotateSpeed();
@@ -53,8 +54,8 @@ public:
 			lcd::displayUnicode(0x500,code,i);
 		}
 		void onTimer(){
-			InputPage::onTimer();
 			displayRotateSpeed();
+			InputPage::onTimer();
 		}
 		virtual ext::ExeCommand onKeyPressed(ext::ExeCommand cmd)
 		{

@@ -154,27 +154,31 @@ void Setting::resetRoundPerMin(){
 void Setting::incRoundPerMinTicks(){
 	axisRoundTicks ++;
 }
+u32 Setting::getRoundPerMinTicks(){
+	return axisRoundTicks;
+}
 s32 Setting::getRoundPerMin(){
 	 return g_RoundPerMin;
 }
-void Setting::updateRoundPerMin(u16 pulseIn4096){
+void Setting::updateRoundPerMin(u32 ticks,u16 pulseIn4096){
 	   axisDegreeQueue[0] = axisDegreeQueue[1];
 		 axisDegreeQueue[1] = axisDegreeQueue[2];
 		 axisDegreeQueue[2] = pulseIn4096;
 		 axisTicksQueue[0] = axisTicksQueue[1];
 		 axisTicksQueue[1] = axisTicksQueue[2];
-		 axisTicksQueue[2] = axisRoundTicks;
+		 axisTicksQueue[2] = ticks;
+	   //LOG_I("%d:%d",pulseIn4096,ticks);
 	   if(axisDegreeQueue[0] < axisDegreeQueue[1] &&
 			  axisDegreeQueue[1] < axisDegreeQueue[2]){
 					u32 dltPulse = axisDegreeQueue[2] - axisDegreeQueue[0];
 					u32 dltTime = axisTicksQueue[2] - axisTicksQueue[0];
-					g_RoundPerMin = dltPulse * 60 * 1000 / dltTime / 4096;
+					g_RoundPerMin = dltPulse * 50 * 60 / dltTime / 4096;
 			}
 		 else if(
 				axisDegreeQueue[0] > axisDegreeQueue[1] &&
 			  axisDegreeQueue[1] > axisDegreeQueue[2]){
 					u32 dltPulse = axisDegreeQueue[0] - axisDegreeQueue[2];
 					u32 dltTime = axisTicksQueue[0] - axisTicksQueue[2];
-					g_RoundPerMin = dltPulse * 60 * 1000 / dltTime / 4096;
+					g_RoundPerMin = dltPulse * 50 * 60 / dltTime / 4096;
 			}
 }
