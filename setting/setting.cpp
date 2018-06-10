@@ -18,6 +18,7 @@ struct Config{
 	  u8 toothCount;//ÑÀÊı, 0 means not configured
 	  u8 reserved; //0
 	  u32 input[4];// 0 means not configured
+	  u32 defaultBaseInput;
 	  u8 reserved2[3];
 	  u8 checkSum;// byte sum of all the data above
 };
@@ -37,7 +38,8 @@ void Setting::initSetting(){
 		LOG_I("%d ",read[i]);
 	}*/
 	bool valid = false;
-	needPreset = false;
+	needPreset = true;
+	return;
 	I2C1_init();
 	delay_ms(50);
 	config.magicCode = 0;
@@ -64,6 +66,7 @@ void Setting::initSetting(){
 		 config.magicCode = 0xbeefbeef;
 		 needPreset = true;
 	}
+	needPreset = true;
 }
 bool Setting::needPresetParameters(){
 	  return needPreset;
@@ -110,11 +113,18 @@ u32  Setting::getInput(u32 i){
 	 if(i > 3)return 0;
 	 return g_inputs[i];
 }
-void Setting::setConfigInput(u32 i,u32 v){
+void Setting::setBaseConfigInput(u32 i,u32 v){
 	 if(i > 3)return ;
 	 config.input[i] = v;
 }
-u32  Setting::getConfigInput(u32 i){
+void Setting::setDefaultBaseConfigInputIndex(u32 i)
+{
+	 config.defaultBaseInput = i > 3 ? 0 : i;
+}
+u32  Setting::getDefaultBaseConfigInputIndex(){
+	return config.defaultBaseInput;
+}
+u32  Setting::getBaseConfigInput(u32 i){
 	 if(i > 3)return 0;
 	 return config.input[i];
 }

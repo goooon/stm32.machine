@@ -24,8 +24,12 @@ public:
    static u32  getToothCount();
    static u32  getInput(u32 i);
    static void setInput(u32 i,u32 u);
-   static void setConfigInput(u32 i,u32 v);
-   static u32  getConfigInput(u32 i);
+
+   static void setBaseConfigInput(u32 i,u32 v);
+   static void setDefaultBaseConfigInputIndex(u32 defautIndex);
+   static u32  getDefaultBaseConfigInputIndex();
+   static u32  getBaseConfigInput(u32 i);
+   
    static void setConfigToothType(ToothType ypte);
    static ToothType  getConfigToothType();
    static void saveToFlash();

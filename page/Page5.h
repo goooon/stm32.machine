@@ -30,16 +30,16 @@ public:
 			inputlen[1] = 4;
 			inputlen[2] = 4;
 			inputlen[3] = 4;
-			inputNumb[0] = Setting::getConfigInput(0);
-		  inputNumb[1] = Setting::getConfigInput(1);
-		  inputNumb[2] = Setting::getConfigInput(2);
-		  inputNumb[3] = Setting::getConfigInput(3);
+			inputNumb[0] = 0;//Setting::getConfigInput(0);
+		  inputNumb[1] = 0;//Setting::getConfigInput(1);
+		  inputNumb[2] = 0;//Setting::getConfigInput(2);
+		  inputNumb[3] = 0;//Setting::getConfigInput(3);
 			LOG_I("dist stored is:%d,%d,%d,%d",inputNumb[3],inputNumb[2],inputNumb[1],inputNumb[0]);
 			triIconAddr = 0x5E0;
 			mainAxixDegreeAddr = 0x510;
 			displayRotateSpeed();
 			InputPage::enter();
-			displayAll();
+			displayAllValue();
 		}
 		void displayRotateSpeed(){
 			 //»ú´²×ªËÙ
