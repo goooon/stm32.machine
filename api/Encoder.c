@@ -1,6 +1,6 @@
 #include "./Encoder.h"
 const static int INPinsA = GPIO_Pin_6 | GPIO_Pin_7;
-void (*g_onExitInterupt)(char,char);
+static void (*g_onExitInterupt)(char,char);
 /******************************************************************************* 
 * Function Name : EXTI4_IRQHandler 
 * Description : This function handles External interrupt Line 4 request. 
