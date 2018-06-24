@@ -1,7 +1,7 @@
 extern "C"{
-#include "../sys/delay.h"
-#include "../sys/usart.h"
-#include "../api/Encoder.h"
+	#include "../sys/delay.h"
+	#include "../sys/usart.h"
+	#include "../api/Encoder.h"
 }	
 
 #include "../api/Tracer.h"
@@ -80,29 +80,29 @@ char BeepCode[] = {0xA5,0x5A,0x03,0x80,0x02,0xC8};
 	 Page6 page6;
 	 Page7 page7;
 	 Page8 page8;
-   Page9 page9;
-   Page10 page10;
-   Page11 page11;
-   Page12 page12;
+     Page9 page9;
+     Page10 page10;
+     Page11 page11;
+     Page12 page12;
  int main(void)
  {		
 	 u16 axisDegree = 0;
-	 delay_init();	   	 	  //ÑÓÊ±º¯Êý³õÊ¼»¯	
+	 delay_init();	   	 	  //ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê¼ï¿½ï¿½	
    Page* page = 0;
 	 Page* pages[] = {&page0,&page1,&page2,&page3,&page4,&page5,&page6,&page7,&page8,&page9,&page10,&page11,&page12};
 	 
 	 //page = pages[2];
 	 //page->handleEnter();
 	 
-	NVIC_Configuration(); //ÉèÖÃNVICÖÐ¶Ï·Ö×é2:2Î»ÇÀÕ¼ÓÅÏÈ¼¶£¬2Î»ÏìÓ¦ÓÅÏÈ¼¶
-	UART3_Init(115200,onReceive3,uart3RxBuffer,1024, uart3TxBuffer,1024);	  //´®¿Ú³õÊ¼»¯Îª115200(µ÷ÊÔÓÃ)
-	UART2_Init(115200,onReceive2,uart2RxBuffer,1024, uart2TxBuffer,1024);	  //´®¿Ú³õÊ¼»¯Îª115200(µ÷ÊÔÓÃ)
+	NVIC_Configuration(); //ï¿½ï¿½ï¿½ï¿½NVICï¿½Ð¶Ï·ï¿½ï¿½ï¿½2:2Î»ï¿½ï¿½Õ¼ï¿½ï¿½ï¿½È¼ï¿½ï¿½ï¿½2Î»ï¿½ï¿½Ó¦ï¿½ï¿½ï¿½È¼ï¿½
+	UART3_Init(115200,onReceive3,uart3RxBuffer,1024, uart3TxBuffer,1024);	  //ï¿½ï¿½ï¿½Ú³ï¿½Ê¼ï¿½ï¿½Îª115200(ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½)
+	UART2_Init(115200,onReceive2,uart2RxBuffer,1024, uart2TxBuffer,1024);	  //ï¿½ï¿½ï¿½Ú³ï¿½Ê¼ï¿½ï¿½Îª115200(ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½)
  	ENCODER_Init(onExitInterupt);
 	ext::Led::Init();
 	ext::Fpga::Init();
 	lcd::reset();
   delay_ms(200);
-	LOG_I("HELLO Reset");
+	LOG_I("Reset");
 
 	SysTick_Config(1024 * 1024 * 1);
 	Setting::initSetting();
@@ -127,35 +127,13 @@ char BeepCode[] = {0xA5,0x5A,0x03,0x80,0x02,0xC8};
 				 }
 				 LOG_P("\r\n");
 				 UART2_SendBuffer((u8*)param,dec);
-				 /*
-				 if(tempBuff3[0] >= '0' && tempBuff3[0] <= '9'){
-					 KeyCode[5] = tempBuff3[0] - '0';
-					 LOG_P("send :  ");
-					 for(int i = 0;i < ARRAY_SIZE(KeyCode); ++i){
-						  LOG_P("0x%x ",((char*)KeyCode)[i]);
-					 }
-				   LOG_P("\r\n");
-					 UART2_SendBuffer((u8*)KeyCode,ARRAY_SIZE(KeyCode));
-				 }
-				 if(tempBuff3[0] == 's'){
-					 UART2_SendBuffer((u8*)LedRead,ARRAY_SIZE(LedRead));
-				 }
-				 if(tempBuff3[0] == 'b'){
-					 UART2_SendBuffer((u8*)BeepCode,ARRAY_SIZE(BeepCode));
-				 }*/
 			 }
 			 else if(type == UART2){
-				 //LOG_P("from lcd :%d  ",dec);
-				 for(int i = 0;i < dec; ++i){
-					 //LOG_P("0x%x ",tempBuff2[i]);
-				 }
-				 //LOG_I("");
+				 //data received from UART2(lcd)
 				 lcd::parseCodes(tempBuff2,dec);
 			 }
 			 else if(type == EXITR){
-				 //LOG_I("interupt %d:0x%x",dec,hex>>6);
-				 //axisDegree += (hex>>7);
-				 //test code, todo
+				 //interrupt from Encoder
 				 if(page == &page12){
 					 ((Page12*)page)->handleEncoder(hex>>7);
 				 }
@@ -184,19 +162,19 @@ char BeepCode[] = {0xA5,0x5A,0x03,0x80,0x02,0xC8};
 				 page->handleTimer();
 			 }
 			 else if(type == Timer1){
-				 //´ÓFPGA¶ÁÈ¡Ö÷Öá½Ç¶È
+				 //ï¿½ï¿½FPGAï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½Ç¶ï¿½
 				 u32 ticks = hex;
 				 axisDegree = dec;//(ext::Fpga::Read(1) << 8) | ext::Fpga::Read(0);
-				 //¸üÐÂÖ÷Öá½Ç¶È
+				 //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç¶ï¿½
 				 Setting::setMainAxisAngleInPulse(axisDegree/4);
-				 //¸üÐÂ×ªËÙ
+				 //ï¿½ï¿½ï¿½ï¿½×ªï¿½ï¿½
 				 Setting::updateRoundPerMin(ticks,axisDegree);
 			 }
 		 }
 		 else{
 			 ext::ExeCommand cmd = ext::Keyboard::Scan();
 			 if(cmd != ext::None){
-					LOG_I("cmd %c[0x%x/%d]",cmd,cmd,cmd);
+				  LOG_I("cmd %c[0x%x/%d]",cmd,cmd,cmd);
 				  page->handleKeyPressed(cmd);
        }
 			 delay_ms(200);

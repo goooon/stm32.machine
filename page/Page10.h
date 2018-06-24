@@ -65,12 +65,15 @@ public:
 	}*/
 	virtual ext::ExeCommand onKeyPressed(ext::ExeCommand cmd)
 	{
-		LOG_I("key pressed:%c",cmd);
+		  LOG_I("key pressed:%c",cmd);
 			switch(cmd){
 				  case ext::CMD_FanHui:
 							lcd::jumpToPage(9);
 							return ext::None;
 					case ext::CMD_Input:
+						  if(!haveValidInput()){
+									return ext::None;
+								}
 							editing = false;
 						  Setting::setMeasureFixPulse(inputNumb[currSelectedIndex],calcDegreePulse(inputNumb[currSelectedIndex]));
 					    Setting::setBaseConfigInput(0,inputNumb[0]);

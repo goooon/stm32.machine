@@ -39,10 +39,10 @@ void Setting::initSetting(){
 	}*/
 	bool valid = false;
 	needPreset = true;
-	return;
 	I2C1_init();
 	delay_ms(50);
 	config.magicCode = 0;
+	config.defaultBaseInput = -1;
 	//At24c02_write(0,0,(u8*)&config,sizeof(config));
 	At24c02_read(0,0,(u8*)&config,sizeof(config));
 	if(config.magicCode == 0xbeefbeef){
@@ -71,6 +71,9 @@ void Setting::initSetting(){
 bool Setting::needPresetParameters(){
 	  return needPreset;
 }
+void Setting::setNeedPresetParameters(bool need){
+	  needPreset = need;
+}
 void Setting::saveToFlash(){
 	 u8* end = (u8*)&config + sizeof(config) - 1;
 	 u8 sum = 0;
@@ -79,6 +82,7 @@ void Setting::saveToFlash(){
 	 }
 	 config.checkSum = sum;
 	 At24c02_write(0,0,(u8*)&config,sizeof(config));
+	 needPreset = false;
 }
 void Setting::setMeasureFixPulse(u32 dist,u32 count){
 	 g_MeasureFixPulse = count;

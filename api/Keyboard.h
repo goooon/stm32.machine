@@ -35,29 +35,28 @@ namespace ext
 					 CMD_Dn = 'V',
 					 CMD_Left = '<',
 					 CMD_Right = '>',
-					 CMD_Input='I',
-					 CMD_Setting='S',
-					 CMD_WheelFix='W',
-					 CMD_KnifeFix='K',
+					 CMD_Input='I',//输入
+					 CMD_Setting='S',//设置
+					 CMD_WheelFix='W',//手轮修正
+					 CMD_KnifeFix='K',//进刀修正
 					 CMD_FanHui = 'F'
 				}ExeCommand;
 				
 	 class Keyboard
 	 {
 		 public:
-			 const static int INPinsE = GPIO_Pin_12 | GPIO_Pin_13 | GPIO_Pin_14 | GPIO_Pin_15;
-		   const static int OutPinsE =GPIO_Pin_10 | GPIO_Pin_11;
-		   const static int OutPinsG =GPIO_Pin_0 | GPIO_Pin_1;
-		   const static int OutPinsF =GPIO_Pin_13 | GPIO_Pin_14 |GPIO_Pin_15;
-		   const static int INReturnPins = GPIO_Pin_15;
-		   static bool Init();
-			 static uint16_t ScanRow(){
+			const static int INPinsE = GPIO_Pin_12 | GPIO_Pin_13 | GPIO_Pin_14 | GPIO_Pin_15;
+		   	const static int OutPinsE =GPIO_Pin_10 | GPIO_Pin_11;
+		   	const static int OutPinsG =GPIO_Pin_0 | GPIO_Pin_1;
+		   	const static int OutPinsF =GPIO_Pin_13 | GPIO_Pin_14 |GPIO_Pin_15;
+		   	const static int INReturnPins = GPIO_Pin_15;
+		   	static bool Init();
+			static uint16_t ScanRow(){
 					  return  GPIO_ReadInputData(GPIOE);
 				}
-				static uint16_t key_prev;
-				static uint16_t SubScanCol(uint16_t row);
-				
-				static ExeCommand Scan();					
+			static uint16_t key_prev;
+			static uint16_t SubScanCol(uint16_t row);
+			static ExeCommand Scan();					
 			};
 		}
 #endif

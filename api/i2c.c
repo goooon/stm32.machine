@@ -1,5 +1,5 @@
 #include "i2c.h"
-
+#include "stm32f10x_i2c.h"
 //void I2C_Init(I2C_TypeDef* I2Cx, I2C_InitTypeDef* I2C_InitStruct);
 void I2C1_init(void)
 {

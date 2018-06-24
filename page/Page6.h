@@ -12,6 +12,7 @@ public:
 			 u32 roundPerMin = Setting::getRoundPerMin();
 			 u32 angle = Setting::getMainAxisAngleInPulse();
 			 display(roundPerMin,angle);
+			 state = 0;
 		}
 		virtual void leave(){
 			
@@ -20,7 +21,7 @@ public:
 			  short code[20];
 			  u32 measureDist,measurePuls;
 			  s32 whellDist,whellPulse;
-			  
+			  s32 totalDist;
 			  Setting::getWhellFixPulse(whellDist,whellPulse);
 			  //机床转速
 			  int i = tool::convertFixed(r,0,code,20,false);
@@ -33,6 +34,45 @@ public:
 			  //主轴角度
 			  i = tool::convertPulseToAngle(a,1024,code,ARRAY_SIZE(code));
 			  lcd::displayUnicode(0x620,code,i);
+			  //公母罗纹
+			if(Setting::getConfigToothType() == 1){//male
+					code[0] = 0x516c;//公
+					
+				}
+				else if(Setting::getConfigToothType() == 2){//female
+					code[0] = 0x6bcd;//母
+				}
+				else{
+					LOG_E("unknown tooth type %d",Setting::getToothCount());
+					code[0] = 0x516c;//公
+				}
+				code[1] = 0x6263;
+				code[2] = 0x94bb;
+				code[3] = 0x6746;
+				code[4] = 0xffff;
+				lcd::displayUnicode(0x6B0,code,4);
+				//当前牙数
+			  if(Setting::getToothCount() == 4){
+					 code[0] = 0x0034;//'4'
+				}
+				else if(Setting::getToothCount() == 6){
+					 code[0] = 0x0036;//'6'
+				}
+				else if(Setting::getToothCount() == 8){
+					 code[0] = 0x0038;//'8'
+				}
+				else{
+					//use default
+					LOG_E("unknown tooth count %d",Setting::getToothCount());
+					code[0] = 0x0034;//'4'
+				}
+			  code[1] = 0x7259;
+				code[2] = 0x87ba;
+				code[3] = 0x8ddd;
+				code[4] = 0x94bb;
+				code[5] = 0x6746;
+				code[6] = 0xffff;
+				lcd::displayUnicode(0x6D0,code,7);
 			  //测量修正
 			  Setting::getMeasureFixPulse(measureDist,measurePuls);
 			  i = tool::convertFixed(measureDist,100,code,20);
@@ -62,7 +102,9 @@ public:
 			  code[i++] = 0xffff;
 			  lcd::displayUnicode(0x660,code,i);
 			  //合计修正距离
-			  i = tool::convertFixed(measureDist + whellDist,100,code,20); 
+				totalDist = measureDist + whellDist;
+				if(totalDist < 0)totalDist += 625;
+			  i = tool::convertFixed(totalDist,100,code,20); 
 			  i--;
 			  code[i++] = 'm';
 			  code[i++] = 'm';
@@ -77,7 +119,41 @@ public:
 			  code[i++] = 0x51b2;
 			  code[i++] = 0xffff;
 			  lcd::displayUnicode(0x6a0,code,i);
-				
+				//状态
+				displayState();
+		}
+		void displayState(){
+			short code[20];
+			int i = 0;
+			if(state == 0){//未开始加工
+					code[0] = 0x672a;
+					code[1] = 0x5f00;
+					code[2] = 0x59cb;
+					code[3] = 0x52a0;
+					code[4] = 0x5de5;
+					code[5] = 0xffff;
+					i = 6;
+				}
+				else if(state == 1){//正在加工..
+					code[0] = 0x6b63;
+					code[1] = 0x5728;
+					code[2] = 0x52a0;
+					code[3] = 0x5de5;
+					code[4] = 0x002e;
+					code[5] = 0x002e;
+					code[6] = 0x002e;
+					code[7] = 0xffff;
+					i = 8;
+				}
+				else{//加工结束
+					code[0] = 0x52a0;
+					code[1] = 0x5de5;
+					code[2] = 0x7ed3;
+					code[3] = 0x675f;
+					code[4] = 0xffff;
+					i = 5;
+				}
+				lcd::displayUnicode(0x6E0,code,i);
 		}
 		virtual ext::ExeCommand onKeyPressed(ext::ExeCommand cmd)
 		{
@@ -85,6 +161,10 @@ public:
 			u8 data;
 			switch(cmd){
 				  case ext::CMD_FanHui:
+						if(state == 1){
+							return ext::None;
+						}
+						Setting::setWhellFixPulse(0,0);
 						lcd::jumpToPage(5);
 						FPGA_CONFIG();
 						return ext::None;
@@ -98,6 +178,8 @@ public:
 						return ext::None;
 						break;
 					case ext::CMD_Start:
+						state = 1;
+					  displayState();
 						FPGA_CONFIG();
 						FPGA_SET_DELAYED_PULSE(total);
 					  FPGA_START_WORKING();
@@ -105,6 +187,8 @@ public:
 						return ext::None;
 						break;
 					case ext::CMD_Stop:
+						state = 2;
+						displayState();
 						FPGA_SET_DELAYED_PULSE(0);
 					  FPGA_RESET();
 					  LOG_I("reset fpga 0x%x",total);
@@ -170,5 +254,6 @@ public:
 		}
 	private:
 	  s32 total;
+	  u8  state;//0: not started, 1: started, 2: stopped
 };
 #endif

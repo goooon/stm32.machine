@@ -43,7 +43,8 @@ public:
 							break;
 					  case ext::CMD_FanHui:
 						case ext::CMD_Enter:
-							Setting::setWhellFixPulse(Setting::pulseToDistMM(count),count);
+						case ext::CMD_Input:
+							Setting::setWhellFixPulse(count * 625 / 1024,count);
 							lcd::jumpToPage(6);
 							break;
 					  default:
@@ -99,7 +100,7 @@ public:
 			 }
 			 lcd::displayUnicode(0x1240,code,i);
 			 //ZÖáµ÷Õû¾àÀë
-			 int len = tool::convertFixed(count * 6250 / 1024,1000,code,20);
+			 int len = tool::convertFixed(count * 625 / 1024,100,code,20);
 			 lcd::displayUnicode(0x1280,code,len);
 		}
 		void handleEncoder(char dir){

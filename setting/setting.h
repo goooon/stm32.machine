@@ -43,5 +43,6 @@ public:
 	 static void updateRoundPerMin(u32 ticks, u16 pulseIn4096);
 	 
 	 static bool needPresetParameters();
+	 static void setNeedPresetParameters(bool need);
 };
 #endif

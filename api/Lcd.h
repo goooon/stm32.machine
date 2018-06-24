@@ -4,6 +4,7 @@ extern "C"{
 #include "../sys/delay.h"
 #include "../sys/usart.h"
 }	
+//http://www.viewtech.cn/
 namespace lcd
 {
 	  void reset();

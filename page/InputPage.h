@@ -25,10 +25,12 @@ public:
 			for(int i = 0; i < ARRAY_SIZE(input); i ++){
 				//dotNumbToUnicode(i);
 				inputlen[i] = 0;
+				clearEditorValue(i);
 			}
 			displayAllValue();
-			lcd::sendAddrValue(triIconAddr,triIconBitSelectionMask);
 			displayEditorFocus(0);
+			lcd::sendAddrValue(triIconAddr,triIconBitSelectionMask);
+			onKeyPressed(ext::CMD_RepeatMeas);
 		}
 		void updateRow(u32 i){
 			dotNumbToUnicode(i,inputNumb[i]);
@@ -47,14 +49,14 @@ public:
 			displayMainAxisDegree();
 			displayTable();
 		}
-		//²âÁ¿¾àÀë
+		//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		void displayMeasured(int index){
 			int uiRowAddrIndex = 3 - index;
 			char offset[] = {28,24,20,16,12,8,4,0,0,0,0,0,0,0,0,0};
 			lcd::sendAddrValue(measureBassAddr - uiRowAddrIndex * 0x100,134 + offset[inputlen[index]],185 - 16 * uiRowAddrIndex);
 			lcd::displayUnicode(inputPulseAddr[uiRowAddrIndex],input[index],inputlen[index] + 1);
 		}
-		//¾àÀë¶ÔÓ¦µÄ½Ç¶È
+		//ï¿½ï¿½ï¿½ï¿½ï¿½Ó¦ï¿½Ä½Ç¶ï¿½
 		void displayFixedDigree(int index,u32 numb){
 			  int uiRowAddrIndex = 3 - index;
 			  short code[20];
@@ -69,7 +71,7 @@ public:
 				}
 				lcd::displayUnicode(inputDegreeAddr[uiRowAddrIndex],code,len);
 		}
-		//¾àÀë¶ÔÓ¦µÄÂö³å¸öÊý
+		//ï¿½ï¿½ï¿½ï¿½ï¿½Ó¦ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		void displayFixedPulse(int index,u32 numb){
 			  int uiRowAddrIndex = 3 - index;
 				short code[20];
@@ -92,13 +94,13 @@ public:
 		}
 		
 		void displayMainAxisDegree(){
-			//Ö÷Öá½Ç¶È
+			//ï¿½ï¿½ï¿½ï¿½Ç¶ï¿½
 			short code[20];
 			u32 c = Setting::getMainAxisAngleInPulse();
 			int i = tool::convertPulseToAngle(c,1024,code,ARRAY_SIZE(code));
 			lcd::displayUnicode(mainAxixDegreeAddr,code,i);
 		}
-		//Çå³ýÄÚÈÝ
+		//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		void clearEditorValue(u32 index){
 			inputlen[index]= 0;
 			inputNumb[index] = 0;
@@ -107,7 +109,7 @@ public:
 			displayFixedDigree(index,inputNumb[index]);
 			displayFixedPulse(index,inputNumb[index]);
 		}
-		//ÏÔÊ¾±à¼­ÊäÈë¿ò
+		//ï¿½ï¿½Ê¾ï¿½à¼­ï¿½ï¿½ï¿½ï¿½ï¿½
 		void displayEditorFocus(u32 index){
 			editing = true;
 			//lcd::displayUnicode(inputPulseAddr[currSelectedIndex],input[currSelectedIndex],inputlen[currSelectedIndex] + 1);
@@ -117,6 +119,9 @@ public:
 		void hideAllEditorFocus(){
 			editing = false;
 			lcd::sendAddrValue(focusBoxAddr,0);
+		}
+		bool haveValidInput(){
+			 if(inputlen[currSelectedIndex] != 0)return true;
 		}
 		virtual ext::ExeCommand onKeyPressed(ext::ExeCommand cmd)
 		{
@@ -189,10 +194,13 @@ public:
 							}*/
 							break;
 						case ext::CMD_Input:
+							  if(!haveValidInput()){
+									return ext::None;
+								}
 							  editing = false;
 						    Setting::setMeasureFixPulse(inputNumb[currSelectedIndex],calcDegreePulse(inputNumb[currSelectedIndex]));
 							  lcd::jumpToPage(6);
-							 return ext::None;
+							  return ext::None;
 						  break;
 					  case ext::CMD_Measure:
 							editing = true;
@@ -246,7 +254,7 @@ public:
 							//displayFixedPulse(currSelectedIndex,inputNumb[currSelectedIndex]);
 							break;
 						default:
-							lcd::sendKeycode(cmd);
+							//lcd::sendKeycode(cmd);
 						  return cmd;
 							break;
 				}
@@ -369,7 +377,7 @@ public:
 			 displayAll();*/
 		}
 		void onTimer(){
-			//Ö÷Öá½Ç¶È
+			//ï¿½ï¿½ï¿½ï¿½Ç¶ï¿½
 			displayMainAxisDegree();		
 		}
 		void dotNumbToUnicode(int index,u32 numbInputted){
@@ -418,9 +426,9 @@ public:
 			 return fixedForToothPulse;
 		}
 		protected:
-			int  testCount;
+		  int  testCount;
 		  int  rotateCount;
-			bool editing;
+		  bool editing;
 		  char currSelectedIndex;
 		  char SelectedIndexMax;
 		  int   inputlen[4];
