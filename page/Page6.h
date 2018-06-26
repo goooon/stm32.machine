@@ -19,6 +19,7 @@ public:
 		}
 		void display(u32 r,u32 a){
 			  short code[20];
+			  s32 defaultInputDist;
 			  u32 measureDist,measurePuls;
 			  s32 whellDist,whellPulse;
 			  s32 totalDist;
@@ -74,7 +75,9 @@ public:
 				code[6] = 0xffff;
 				lcd::displayUnicode(0x6D0,code,7);
 			  //²âÁ¿ÐÞÕý
+				defaultInputDist = Setting::getBaseConfigInput(Setting::getDefaultBaseConfigInputIndex());
 			  Setting::getMeasureFixPulse(measureDist,measurePuls);
+				
 			  i = tool::convertFixed(measureDist,100,code,20);
 			  i--;
 			  code[i++] = 'm';

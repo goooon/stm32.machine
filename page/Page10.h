@@ -75,6 +75,7 @@ public:
 									return ext::None;
 								}
 							editing = false;
+							checkAndFillInput(currSelectedIndex);
 						  Setting::setMeasureFixPulse(inputNumb[currSelectedIndex],calcDegreePulse(inputNumb[currSelectedIndex]));
 					    Setting::setBaseConfigInput(0,inputNumb[0]);
 					    Setting::setBaseConfigInput(1,inputNumb[1]);

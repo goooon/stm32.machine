@@ -198,6 +198,7 @@ public:
 									return ext::None;
 								}
 							  editing = false;
+								checkAndFillInput(currSelectedIndex);
 						    Setting::setMeasureFixPulse(inputNumb[currSelectedIndex],calcDegreePulse(inputNumb[currSelectedIndex]));
 							  lcd::jumpToPage(6);
 							  return ext::None;
@@ -413,16 +414,16 @@ public:
 		u32 calcDegreePulse(u32 distMM){
 			 u32 roundPulse = 1024;
 			 u32 toothCount = Setting::getToothCount();
-			 u32 distPerTooth = 635;
+			 u32 distPerTooth = 625;
 			 u32 pulseDegree = Setting::getMainAxisAngleInPulse();
 			 /*u32 degreeDistMM = toothCount * distPerTooth * pulseDegree / roundPulse;
 			 u32 totalMM = distMM + degreeDistMM;
 			 u32 fixedMM = totalMM %(toothCount*distPerTooth);
 			 u32 fixedForToothMM = fixedMM % distPerTooth;*/
-			 float distDeg = (float)distMM /(float)(distPerTooth * toothCount);
-			 u32   distPulse = roundPulse * distMM / (distPerTooth * toothCount);
+			 float distDeg = (float)distMM /(float)(distPerTooth);
+			 u32   distPulse = roundPulse * distMM / (distPerTooth);
 			 u32   totalPulse = pulseDegree + distPulse;
-			 u32   fixedForToothPulse = totalPulse % (roundPulse / toothCount);
+			 u32   fixedForToothPulse = totalPulse % (roundPulse);
 			 return fixedForToothPulse;
 		}
 		protected:
