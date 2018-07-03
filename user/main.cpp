@@ -114,6 +114,7 @@ char BeepCode[] = {0xA5,0x5A,0x03,0x80,0x02,0xC8};
 	Timer7_Init(40,36000,onTimer7Callback,0);//0.02 s 
 	
 	FPGA_RESET();
+	ext::Fpga::Write(15,0);
 	for(;;)
 	{
 		 u32 dec,hex;

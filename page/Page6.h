@@ -23,6 +23,8 @@ public:
 			  u32 measureDist,measurePuls;
 			  s32 whellDist,whellPulse;
 			  s32 totalDist;
+			  s32 combinedFixDist;
+			  s32 combinedFixPulse;
 			  Setting::getWhellFixPulse(whellDist,whellPulse);
 			  //机床转速
 			  int i = tool::convertFixed(r,0,code,20,false);
@@ -77,15 +79,18 @@ public:
 			  //测量修正
 				defaultInputDist = Setting::getBaseConfigInput(Setting::getDefaultBaseConfigInputIndex());
 			  Setting::getMeasureFixPulse(measureDist,measurePuls);
+				combinedFixDist = measureDist - defaultInputDist;
+				while(combinedFixDist < 0) combinedFixDist += 625;
 				
-			  i = tool::convertFixed(measureDist,100,code,20);
+			  i = tool::convertFixed(combinedFixDist,100,code,20);
 			  i--;
 			  code[i++] = 'm';
 			  code[i++] = 'm';
 			  code[i++] = 0xffff;
 			  lcd::displayUnicode(0x630,code,i);
 				
-			  i = tool::convertFixed(measurePuls,0,code,20);
+				combinedFixPulse = Setting::calcDegreePulse(combinedFixDist);
+			  i = tool::convertFixed(combinedFixPulse,0,code,20);
 			  i--;
 			  code[i++] = 0x8109;
 			  code[i++] = 0x51b2;
@@ -105,7 +110,7 @@ public:
 			  code[i++] = 0xffff;
 			  lcd::displayUnicode(0x660,code,i);
 			  //合计修正距离
-				totalDist = measureDist + whellDist;
+				totalDist = combinedFixDist + whellDist;
 				if(totalDist < 0)totalDist += 625;
 			  i = tool::convertFixed(totalDist,100,code,20); 
 			  i--;
@@ -113,7 +118,7 @@ public:
 			  code[i++] = 'm';
 			  code[i++] = 0xffff;
 			  lcd::displayUnicode(0x690,code,i);
-				total = measurePuls + whellPulse;
+				total = combinedFixPulse + whellPulse;
 				total %= 1024;
 				if(total < 0)total += 1024;
 				i = tool::convertFixed(total,0,code,20);

@@ -44,5 +44,6 @@ public:
 	 
 	 static bool needPresetParameters();
 	 static void setNeedPresetParameters(bool need);
+	 static u32  calcDegreePulse(u32 distMM);
 };
 #endif

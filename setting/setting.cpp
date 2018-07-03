@@ -38,7 +38,7 @@ void Setting::initSetting(){
 		LOG_I("%d ",read[i]);
 	}*/
 	bool valid = false;
-	needPreset = true;
+	needPreset = false;
 	I2C1_init();
 	delay_ms(50);
 	config.magicCode = 0;
@@ -66,7 +66,7 @@ void Setting::initSetting(){
 		 config.magicCode = 0xbeefbeef;
 		 needPreset = true;
 	}
-	needPreset = true;
+	//needPreset = true;
 }
 bool Setting::needPresetParameters(){
 	  return needPreset;
@@ -182,17 +182,33 @@ void Setting::updateRoundPerMin(u32 ticks,u16 pulseIn4096){
 		 axisTicksQueue[1] = axisTicksQueue[2];
 		 axisTicksQueue[2] = ticks;
 	   //LOG_I("%d:%d",pulseIn4096,ticks);
-	   if(axisDegreeQueue[0] < axisDegreeQueue[1] &&
-			  axisDegreeQueue[1] < axisDegreeQueue[2]){
+	   if(axisDegreeQueue[0] <= axisDegreeQueue[1] &&
+			  axisDegreeQueue[1] <= axisDegreeQueue[2]){
 					u32 dltPulse = axisDegreeQueue[2] - axisDegreeQueue[0];
 					u32 dltTime = axisTicksQueue[2] - axisTicksQueue[0];
 					g_RoundPerMin = dltPulse * 50 * 60 / dltTime / 4096;
 			}
 		 else if(
-				axisDegreeQueue[0] > axisDegreeQueue[1] &&
-			  axisDegreeQueue[1] > axisDegreeQueue[2]){
+				axisDegreeQueue[0] >= axisDegreeQueue[1] &&
+			  axisDegreeQueue[1] >= axisDegreeQueue[2]){
 					u32 dltPulse = axisDegreeQueue[0] - axisDegreeQueue[2];
-					u32 dltTime = axisTicksQueue[0] - axisTicksQueue[2];
+					u32 dltTime = axisTicksQueue[2] - axisTicksQueue[0];
 					g_RoundPerMin = dltPulse * 50 * 60 / dltTime / 4096;
 			}
 }
+u32 Setting::calcDegreePulse(u32 distMM){
+			 u32 roundPulse = 1024;
+			 //u32 toothCount = Setting::getToothCount();
+			 u32 distPerTooth = 625;
+			 u32 pulseDegree = Setting::getMainAxisAngleInPulse();
+	     int result;
+			 int fixedForToothPulse = 0;
+			 int x = distPerTooth * (1024 - pulseDegree) / roundPulse;
+			 int releativeDist = distMM - x;
+			 while(releativeDist < 0) releativeDist += distPerTooth;
+			 
+			 fixedForToothPulse = roundPulse * releativeDist / distPerTooth;
+			 result = fixedForToothPulse % roundPulse;
+	     LOG_I("dist:%d,axis:%d, result: %d",distMM,pulseDegree,result);
+	     return result;
+		}

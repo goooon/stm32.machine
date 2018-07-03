@@ -18,13 +18,11 @@ public:
 			rotateCount = 0;
 			currSelectedIndex = 0;
 			SelectedIndexMax = 0;
-			inputNumb[0] = 0;
-		  inputNumb[1] = 0;
-		  inputNumb[2] = 0;
-		  inputNumb[3] = 0;
 			for(int i = 0; i < ARRAY_SIZE(input); i ++){
 				//dotNumbToUnicode(i);
 				inputlen[i] = 0;
+				currMainAxisInPulse[i] = 0;
+				inputNumb[i] = 0;
 				clearEditorValue(i);
 			}
 			displayAllValue();
@@ -62,8 +60,9 @@ public:
 			  short code[20];
 			  int len = 0;
 			  if(inputlen[index] != 0){
-					int pulseToFix = calcDegreePulse(numb);
-					len = tool::convertPulseToAngle(pulseToFix,1024,code,ARRAY_SIZE(code));
+					//int pulseToFix = calcDegreePulse(numb);
+					//len = tool::convertPulseToAngle(pulseToFix,1024,code,ARRAY_SIZE(code));
+					len = tool::convertPulseToAngle(currMainAxisInPulse[index],1024,code,ARRAY_SIZE(code));
 				}
 				else{
 					code[0] = 0xFFFF;
@@ -78,7 +77,7 @@ public:
 				char offset[] = {31,27,23,19,15,11,7,3,0,0,0,0,0};
 				int len = 0;
 				if(inputlen[index] != 0){
-					int pulseToFix = calcDegreePulse(numb);
+					int pulseToFix = Setting::calcDegreePulse(numb);
 					len = tool::convertFixed(pulseToFix,0,code,20,false);
 					len --;
 					code[len++] = 0x8109;
@@ -139,6 +138,7 @@ public:
 						case ext::Numb_9:
 						case ext::Numb_Dot:
 							if(!editing)break;
+						  currMainAxisInPulse[currSelectedIndex] = Setting::getMainAxisAngleInPulse();
 							if(MAX_INPUT_LEN > inputlen[currSelectedIndex]){
 								if(inputlen[currSelectedIndex] == 0 && ext::Numb_Dot == cmd){
 									 input[currSelectedIndex][0] = '0';
@@ -175,6 +175,7 @@ public:
 							inputNumb[currSelectedIndex] = 0;
 						  input[currSelectedIndex][0] = 0xFFFF;
 						  inputlen[currSelectedIndex] = 0;
+						  currMainAxisInPulse[currSelectedIndex] = Setting::getMainAxisAngleInPulse();
 						  displayMeasured(currSelectedIndex);
 						  checkAndFillInputWhenEditing(currSelectedIndex);
 						  displayEditorFocus(currSelectedIndex);
@@ -199,7 +200,7 @@ public:
 								}
 							  editing = false;
 								checkAndFillInput(currSelectedIndex);
-						    Setting::setMeasureFixPulse(inputNumb[currSelectedIndex],calcDegreePulse(inputNumb[currSelectedIndex]));
+						    Setting::setMeasureFixPulse(inputNumb[currSelectedIndex],Setting::calcDegreePulse(inputNumb[currSelectedIndex]));
 							  lcd::jumpToPage(6);
 							  return ext::None;
 						  break;
@@ -213,11 +214,16 @@ public:
 							if(inputlen[currSelectedIndex] == 0)return;
 							if(SelectedIndexMax >= 3)return;
 						  else SelectedIndexMax ++;
+						
 						  checkAndFillInput(currSelectedIndex);
+						
+						  currMainAxisInPulse[currSelectedIndex] = Setting::getMainAxisAngleInPulse();
+						
 						  displayFixedDigree(currSelectedIndex,inputNumb[currSelectedIndex]);
 							displayFixedPulse(currSelectedIndex,inputNumb[currSelectedIndex]);
-						
+						  
 						  currSelectedIndex = SelectedIndexMax;
+						  //currMainAxisInPulse[currSelectedIndex] = Setting::getMainAxisAngleInPulse();
 						  lcd::sendAddrValue(triIconAddr,triIconBitSelectionMask);
 						  displayEditorFocus(currSelectedIndex);
 							break;
@@ -411,21 +417,24 @@ public:
 				input[index][len] = 0xffff;
 				inputlen[index] = len;
 		}
-		u32 calcDegreePulse(u32 distMM){
+		/*u32 calcDegreePulse(u32 distMM){
 			 u32 roundPulse = 1024;
 			 u32 toothCount = Setting::getToothCount();
 			 u32 distPerTooth = 625;
 			 u32 pulseDegree = Setting::getMainAxisAngleInPulse();
-			 /*u32 degreeDistMM = toothCount * distPerTooth * pulseDegree / roundPulse;
-			 u32 totalMM = distMM + degreeDistMM;
-			 u32 fixedMM = totalMM %(toothCount*distPerTooth);
-			 u32 fixedForToothMM = fixedMM % distPerTooth;*/
-			 float distDeg = (float)distMM /(float)(distPerTooth);
-			 u32   distPulse = roundPulse * distMM / (distPerTooth);
-			 u32   totalPulse = pulseDegree + distPulse;
-			 u32   fixedForToothPulse = totalPulse % (roundPulse);
-			 return fixedForToothPulse;
-		}
+			 //float distDeg = (float)distMM /(float)(distPerTooth);
+			 //u32   distPulse = roundPulse * distMM / (distPerTooth);
+			 //u32   totalPulse = pulseDegree + distPulse;
+			 //u32   fixedForToothPulse = totalPulse % (roundPulse);
+			 //return fixedForToothPulse;
+			 int fixedForToothPulse = 0;
+			 int x = distPerTooth * pulseDegree / roundPulse;
+			 int releativeDist = distMM - x;
+			 while(releativeDist < 0) releativeDist += distPerTooth;
+			 
+			 fixedForToothPulse = roundPulse * releativeDist / distPerTooth;
+			 return fixedForToothPulse % roundPulse;
+		}*/
 		protected:
 		  int  testCount;
 		  int  rotateCount;
@@ -435,6 +444,7 @@ public:
 		  int   inputlen[4];
 		  short input[4][MAX_INPUT_LEN + 2];
 		  unsigned long inputNumb[4];
+		  unsigned long currMainAxisInPulse[4];
 		  short inputPulseAddr[4];
 		  short inputDegreeAddr[4];
 		  short triIconAddr;

@@ -25,7 +25,7 @@ namespace ext
 }
 #define FPGA_START_WORKING() ext::Fpga::Write(15,2)
 #define FPGA_RESET()  ext::Fpga::Write(15,3);ext::Fpga::Write(15,0)
-#define FPGA_CONFIG() ext::Fpga::Write(15,1)
+#define FPGA_CONFIG() ext::Fpga::Write(15,0)
 #define FPGA_SET_DELAYED_PULSE(count) ext::Fpga::Write(2,(u8)count);ext::Fpga::Write(3,(u8)(count >> 8))
 
 #endif //__STM32F10x_FPGA_H
