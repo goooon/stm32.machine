@@ -90,7 +90,9 @@ char BeepCode[] = {0xA5,0x5A,0x03,0x80,0x02,0xC8};
 	 delay_init();	   	 	  //��ʱ������ʼ��	
    Page* page = 0;
 	 Page* pages[] = {&page0,&page1,&page2,&page3,&page4,&page5,&page6,&page7,&page8,&page9,&page10,&page11,&page12};
-	 
+	 int l1 = sizeof(int);
+	 int le = sizeof(signed long);
+	 LOG_I("%d,%d",l1,le);
 	 //page = pages[2];
 	 //page->handleEnter();
 	 

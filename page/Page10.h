@@ -19,50 +19,11 @@ public:
 		  inputDegreeAddr[2] = 0x1050;
 		  inputDegreeAddr[1] = 0x1080;
 		  inputDegreeAddr[0] = 0x10b0;
-			inputlen[0] = 4;
-			inputlen[1] = 4;
-			inputlen[2] = 4;
-			inputlen[3] = 4;
-		  inputNumb[0] = 0;//Setting::getConfigInput(0);
-		  inputNumb[1] = 0;//Setting::getConfigInput(1);
-		  inputNumb[2] = 0;//Setting::getConfigInput(2);
-		  inputNumb[3] = 0;//Setting::getConfigInput(3);
 			currSelectedIndex = 0;
 		  triIconAddr = 0x10D0;
 		  mainAxixDegreeAddr = 0x1000;
 			InputPage::enter();
-			//displayAll();
-			//u32 angle = Setting::getMainAxisAngleInPulse();
-			//display(angle);
 	}
-	/*void displayItem(int item){
-		int i = 0;
-		short code[20];
-		i = tool::convertFixed(dist[item],100,code,20);
-		i--;
-		code[i++] = 'm';
-		code[i++] = 'm';
-		code[i++] = 0xffff;
-		lcd::displayUnicode(addr[item],code,i);
-		
-		i = tool::convertPulseToAngle(dist[item],PULSE_PER_AXIS_ROUND,code,ARRAY_SIZE(code));
-		lcd::displayUnicode(addr[item] + 0x10,code,i);
-		
-		i = tool::convertFixed(dist[item],0,code,ARRAY_SIZE(code));
-		i--;
-		code[i++] = 0x8109;
-		code[i++] = 0x51b2;
-		code[i++] = 0xffff;
-		lcd::displayUnicode(addr[item] + 0x20,code,i);
-	}*/
-	
-	/*void display(u32 angle){
-		int i;
-		short code[20];
-		//Ö÷Öá½Ç¶È
-		i = tool::convertPulseToAngle(angle,PULSE_PER_AXIS_ROUND,code,ARRAY_SIZE(code));
-		lcd::displayUnicode(0x1000,code,i);
-	}*/
 	virtual ext::ExeCommand onKeyPressed(ext::ExeCommand cmd)
 	{
 		  LOG_I("key pressed:%c",cmd);
@@ -73,14 +34,14 @@ public:
 					case ext::CMD_Input:
 						  if(!haveValidInput()){
 									return ext::None;
-								}
+							}
 							editing = false;
 							checkAndFillInput(currSelectedIndex);
-								Setting::setMeasureFixPulse(inputNumb[currSelectedIndex],Setting::calcDegreePulse(inputNumb[currSelectedIndex]));
-					    Setting::setBaseConfigInput(0,inputNumb[0]);
-					    Setting::setBaseConfigInput(1,inputNumb[1]);
-					    Setting::setBaseConfigInput(2,inputNumb[2]);
-					    Setting::setBaseConfigInput(3,inputNumb[3]);
+							Setting::setMeasureFixPulse(inputDistUM[currSelectedIndex],Setting::calcDegreePulse(inputDistUM[currSelectedIndex]));
+					    Setting::setBaseConfigInput(0,inputDistUM[0]);
+					    Setting::setBaseConfigInput(1,inputDistUM[1]);
+					    Setting::setBaseConfigInput(2,inputDistUM[2]);
+					    Setting::setBaseConfigInput(3,inputDistUM[3]);
 					    Setting::setDefaultBaseConfigInputIndex(currSelectedIndex);
 							Setting::saveToFlash();
 							lcd::jumpToPage(3);

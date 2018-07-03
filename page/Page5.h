@@ -26,15 +26,7 @@ public:
 		  inputDegreeAddr[2] = 0x560;
 		  inputDegreeAddr[1] = 0x590;
 		  inputDegreeAddr[0] = 0x5C0;
-			inputlen[0] = 4;
-			inputlen[1] = 4;
-			inputlen[2] = 4;
-			inputlen[3] = 4;
-			inputNumb[0] = 0;//Setting::getConfigInput(0);
-		  inputNumb[1] = 0;//Setting::getConfigInput(1);
-		  inputNumb[2] = 0;//Setting::getConfigInput(2);
-		  inputNumb[3] = 0;//Setting::getConfigInput(3);
-			LOG_I("dist stored is:%d,%d,%d,%d",inputNumb[3],inputNumb[2],inputNumb[1],inputNumb[0]);
+			LOG_I("dist stored is:%d,%d,%d,%d",inputDistUM[3],inputDistUM[2],inputDistUM[1],inputDistUM[0]);
 			triIconAddr = 0x5E0;
 			mainAxixDegreeAddr = 0x510;
 			displayRotateSpeed();
@@ -75,9 +67,18 @@ public:
 						case ext::CMD_Backspace:
 						case ext::CMD_Measure:
 						case ext::CMD_RepeatMeas:
-						case ext::CMD_Input:
 							InputPage::onKeyPressed(cmd);
-							break;
+						break;
+						case ext::CMD_Input:
+							  if(!haveValidInput()){
+									return ext::None;
+								}
+							  editing = false;
+								checkAndFillInput(currSelectedIndex);
+						    Setting::setMeasureFixPulse(inputDistUM[currSelectedIndex],Setting::calcDegreePulse(inputDistUM[currSelectedIndex]));
+							  lcd::jumpToPage(6);
+							  return ext::None;
+						  break;
 						case ext::CMD_Up:
 							InputPage::onKeyPressed(cmd);
 							break;

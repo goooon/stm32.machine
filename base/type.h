@@ -6,17 +6,18 @@ typedef unsigned int    uint;
 
 typedef signed char       s8;
 typedef unsigned char     u8;
-typedef short           s16;
-typedef unsigned short  u16;
-//typedef signed long     s32;
-//typedef unsigned long   u32;
+typedef short             s16;
+typedef unsigned short    u16;
+typedef int32_t           s32;
+typedef uint32_t          u32;
+
 
 #if ME_COMPILER == ME_COMPILER_GNU
 typedef long long          s64;
 typedef unsigned long long u64;
 #else
-typedef __int64          s64;
-typedef unsigned __int64 u64;
+typedef __int64            s64;
+typedef unsigned __int64   u64;
 #endif
 typedef u64             hash64;
 
@@ -44,7 +45,8 @@ typedef f64             reald;
 
 //typedef wchar_t         wchar;
 typedef char						b32;
-typedef char            achar;
+typedef char   				  achar;
+typedef short  				  wchar;
 typedef u32             result;
 typedef const achar     cachar;
 //typedef const wchar     cwchar;
