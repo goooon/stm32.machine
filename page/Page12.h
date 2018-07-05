@@ -4,7 +4,7 @@
 #include "../api/lcd.h"
 #include "../api/Tool.h"
 #include "../setting/Setting.h"
-//ÊÖÂÖµ÷Õû
+//ï¿½ï¿½ï¿½Öµï¿½ï¿½ï¿½
 void callback(void){
 }
 class Page12 : public Page
@@ -44,7 +44,7 @@ public:
 					  case ext::CMD_FanHui:
 						case ext::CMD_Enter:
 						case ext::CMD_Input:
-							Setting::setWhellFixPulse(count * 625 / 1024,count);
+							Setting::setWhellFixPulse(count * (int)Setting::getDistUMCountPerTooth() / (int)Setting::getPulseCountPerCircle(),count);
 							lcd::jumpToPage(6);
 							break;
 					  default:
@@ -99,15 +99,16 @@ public:
 				 lcd::sendAddrValue(0x2241,0x018a,0x006a);
 			 }
 			 lcd::displayUnicode(0x1240,code,i);
-			 //ZÖáµ÷Õû¾àÀë
-			 int len = tool::convertFixed(count * 625 / 1024,100,code,20);
+			 //Zï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+			 int len = tool::convertFixed(count * (int)Setting::getDistUMCountPerTooth() / (int)Setting::getPulseCountPerCircle(),Setting::getPrecision(),code,20);
 			 lcd::displayUnicode(0x1280,code,len);
 		}
 		void handleEncoder(char dir){
+			 int half = Setting::getPulseCountPerCircle() / 2;
 			 if(dir)count += index;
 			 else count -= index;
-			 if(count > 512)count = 512;
-			 if(count < -512)count = -512;
+			 if(count > half)count = half;
+			 if(count < -half)count = -half;
 			 //lcd::sendAddrValue(0x1240,count);
 			 //short code[] = {0x002b,0x0031,0x002d,0x0032,0x0033,0x0034,0x4f60,0x597d};
 			 display();

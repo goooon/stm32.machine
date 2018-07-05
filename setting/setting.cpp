@@ -4,39 +4,29 @@ extern "C"
 {
 	#include "../api/i2c.h"
 }
+#define PULSE_COUNT_PER_ROUND_FROM_FPGA 4096
+
 static u32 g_MeasureFixPulse;
 static u32 g_MeasureFixDist;
 static s32 g_whellFixPulse;
 static s32 g_whellFixDist;
-static s32 g_RoundPerMin;
+static s32 g_RoundPerMinute;
 static u32 g_MainAxisAngleInPulse;
 static u32 g_MainAxisRotateCount;
 struct Config{
 	  u32 magicCode;//0xbeefbeef,0 means not configured
 	  u8 toothDist;//625mm, 0 means not configured
 	  u8 type;//1:male 2: female,  0 means not configured
-	  u8 toothCount;//ÑÀÊý, 0 means not configured
+	  u8 toothCount;//0 means not configured
 	  u8 reserved; //0
 	  u32 input[4];// 0 means not configured
-	  u32 defaultBaseInput;
+	  u32 defaultBaseInput;//index for input[], which is currently selected
 	  u8 reserved2[3];
 	  u8 checkSum;// byte sum of all the data above
 };
 static Config config;
 static bool needPreset;
 void Setting::initSetting(){
-	
-	//I2C2_Config();
-	//I2C_PageWrite_AT24C01A_02(0,0,(u8*)&config,sizeof(config));
-	/*u8 temp[8] = {1,2,3,4,5,6,7,8};
-  u8 read[8] = {0};
-	I2C1_init();
-	At24c02_write(0,0,temp,8);
-  delay_ms(50);
-	At24c02_read(0,0,read,8);
-  for(int i = 0; i < 8; ++i){
-		LOG_I("%d ",read[i]);
-	}*/
 	bool valid = false;
 	needPreset = false;
 	I2C1_init();
@@ -139,8 +129,11 @@ void Setting::setInput(u32 i,u32 u){
 u32  Setting::getPulseCountPerCircle(){
 	return 1024;
 }
-u32 Setting::getDistMMCountPerTooth(){
-	return 625;
+u32 Setting::getDistUMCountPerTooth(){
+	return 6250;
+}
+u32  Setting::getPrecision(){
+	return 1000;
 }
 void Setting::setConfigToothType(ToothType male){
 	config.type = (u8)male;
@@ -148,8 +141,8 @@ void Setting::setConfigToothType(ToothType male){
 ToothType Setting::getConfigToothType(){
 	return (ToothType)config.type;
 }
-sint Setting::pulseToDistMM(sint pulse){
-	signed long roundDist = getDistMMCountPerTooth() * Setting::getToothCount();
+sint Setting::pulseToDistUM(sint pulse){
+	signed long roundDist = getDistUMCountPerTooth() * Setting::getToothCount();
 	signed long dist = roundDist * pulse  / (signed long)getPulseCountPerCircle();
 	return dist;
 }
@@ -172,43 +165,44 @@ u32 Setting::getRoundPerMinTicks(){
 	return axisRoundTicks;
 }
 s32 Setting::getRoundPerMin(){
-	 return g_RoundPerMin;
+	 return g_RoundPerMinute;
 }
 void Setting::updateRoundPerMin(u32 ticks,u16 pulseIn4096){
-	   axisDegreeQueue[0] = axisDegreeQueue[1];
-		 axisDegreeQueue[1] = axisDegreeQueue[2];
-		 axisDegreeQueue[2] = pulseIn4096;
-		 axisTicksQueue[0] = axisTicksQueue[1];
-		 axisTicksQueue[1] = axisTicksQueue[2];
-		 axisTicksQueue[2] = ticks;
+	    #define COUNT_PER_SECOUND  50  //0.02s per call for Timer7
+		#define SECOUND_PER_MINUTE 60
+		#define PULSE_COUNT_PER_MINUTE(dltPulse) (dltPulse * COUNT_PER_SECOUND * SECOUND_PER_MINUTE)
+		axisDegreeQueue[0] = axisDegreeQueue[1];
+		axisDegreeQueue[1] = axisDegreeQueue[2];
+		axisDegreeQueue[2] = pulseIn4096;
+		axisTicksQueue[0] = axisTicksQueue[1];
+		axisTicksQueue[1] = axisTicksQueue[2];
+		axisTicksQueue[2] = ticks;
 	   //LOG_I("%d:%d",pulseIn4096,ticks);
 	   if(axisDegreeQueue[0] <= axisDegreeQueue[1] &&
-			  axisDegreeQueue[1] <= axisDegreeQueue[2]){
-					u32 dltPulse = axisDegreeQueue[2] - axisDegreeQueue[0];
-					u32 dltTime = axisTicksQueue[2] - axisTicksQueue[0];
-					g_RoundPerMin = dltPulse * 50 * 60 / dltTime / 4096;
-			}
-		 else if(
-				axisDegreeQueue[0] >= axisDegreeQueue[1] &&
-			  axisDegreeQueue[1] >= axisDegreeQueue[2]){
-					u32 dltPulse = axisDegreeQueue[0] - axisDegreeQueue[2];
-					u32 dltTime = axisTicksQueue[2] - axisTicksQueue[0];
-					g_RoundPerMin = dltPulse * 50 * 60 / dltTime / 4096;
-			}
+			axisDegreeQueue[1] <= axisDegreeQueue[2]){//check direction
+			u32 dltPulse = axisDegreeQueue[2] - axisDegreeQueue[0];
+			u32 dltTime = axisTicksQueue[2] - axisTicksQueue[0];
+			g_RoundPerMinute = PULSE_COUNT_PER_MINUTE(dltPulse)/ dltTime / PULSE_COUNT_PER_ROUND_FROM_FPGA;
+		}
+		else if(axisDegreeQueue[0] >= axisDegreeQueue[1] &&
+			axisDegreeQueue[1] >= axisDegreeQueue[2]){//check direction
+			u32 dltPulse = axisDegreeQueue[0] - axisDegreeQueue[2];
+			u32 dltTime = axisTicksQueue[2] - axisTicksQueue[0];
+			g_RoundPerMinute = PULSE_COUNT_PER_MINUTE(dltPulse)/ dltTime / PULSE_COUNT_PER_ROUND_FROM_FPGA;
+		}
 }
 u32 Setting::calcDegreePulse(u32 distMM){
-			 u32 roundPulse = 1024;
-			 //u32 toothCount = Setting::getToothCount();
-			 u32 distPerTooth = 625;
-			 u32 pulseDegree = Setting::getMainAxisAngleInPulse();
-	     int result;
-			 int fixedForToothPulse = 0;
-			 int x = distPerTooth * (1024 - pulseDegree) / roundPulse;
-			 int releativeDist = distMM - x;
-			 while(releativeDist < 0) releativeDist += distPerTooth;
-			 
-			 fixedForToothPulse = roundPulse * releativeDist / distPerTooth;
-			 result = fixedForToothPulse % roundPulse;
-	     LOG_I("dist:%d,axis:%d, result: %d",distMM,pulseDegree,result);
-	     return result;
-		}
+	u32 roundPulse = Setting::getPulseCountPerCircle();
+	u32 distPerTooth = getDistUMCountPerTooth();
+	u32 pulseDegree = Setting::getMainAxisAngleInPulse();
+	int result;
+	int fixedForToothPulse = 0;
+	int x = distPerTooth * (roundPulse - pulseDegree) / roundPulse;
+	int releativeDist = distMM - x;
+	while(releativeDist < 0) releativeDist += distPerTooth;
+
+	fixedForToothPulse = roundPulse * releativeDist / distPerTooth;
+	result = fixedForToothPulse % roundPulse;
+	LOG_I("dist:%d,axis:%d, result: %d",distMM,pulseDegree,result);
+	return result;
+}

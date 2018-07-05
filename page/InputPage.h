@@ -60,8 +60,8 @@ public:
 			  int len = 0;
 			  if(inputCharsLen[index] != 0){
 					//int pulseToFix = calcDegreePulse(numb);
-					//len = tool::convertPulseToAngle(pulseToFix,1024,code,ARRAY_SIZE(code));
-					len = tool::convertPulseToAngle(currMainAxisInPulse[index],1024,code,ARRAY_SIZE(code));
+					//len = tool::convertPulseToAngle(pulseToFix,Setting::getPulseCountPerCircle(),code,ARRAY_SIZE(code));
+					len = tool::convertPulseToAngle(currMainAxisInPulse[index],Setting::getPulseCountPerCircle(),code,ARRAY_SIZE(code));
 				}
 				else{
 					code[0] = 0xFFFF;
@@ -95,7 +95,7 @@ public:
 			//����Ƕ�
 			short code[20];
 			u32 c = Setting::getMainAxisAngleInPulse();
-			int i = tool::convertPulseToAngle(c,1024,code,ARRAY_SIZE(code));
+			int i = tool::convertPulseToAngle(c,Setting::getPulseCountPerCircle(),code,ARRAY_SIZE(code));
 			lcd::displayUnicode(mainAxixDegreeAddr,code,i);
 		}
 		//�������
@@ -412,21 +412,21 @@ public:
 			  u32 times = 1000000000;
 			  int len = 0;
 			  unsigned int numb = numbInputted;
-			  while(times != 1000){
+			  while(times != Setting::getPrecision()){
 					 if(numb / times != 0){
 						  break;
 					 }
 					 times /= 10;
 				}
-				while(times != 1000){
+				while(times != Setting::getPrecision()){
 					inputChars[index][len] = numb / times + '0';
 					len ++;
 					numb %= times;
 					times /= 10;
 				}
-				inputChars[index][len] = numb / 1000 + '0';
+				inputChars[index][len] = numb / Setting::getPrecision() + '0';
 				len ++;
-				numb %= 1000;
+				numb %= Setting::getPrecision();
 				
 				inputChars[index][len] = '.';
 				len ++;
@@ -440,25 +440,25 @@ public:
 				inputChars[index][len] = 0xffff;
 				inputCharsLen[index] = len;
 		}
-		protected://for data
-	    short inputCharsLen[4];
-		  wchar inputChars[4][MAX_INPUT_LEN + 2];
-		  s32   inputDistUM[4];
-		
-		  char currSelectedIndex;
-		  char SelectedIndexMax;
-		  s32  currMainAxisInPulse[4];
-		protected://for UI
-		  int  testCount;
-		  int  rotateCount;
-		  bool editing;
+protected://for data
+	short inputCharsLen[4];
+	wchar inputChars[4][MAX_INPUT_LEN + 2];
+	s32   inputDistUM[4];
 
-		  short inputPulseAddr[4];
-		  short inputDegreeAddr[4];
-		  short triIconAddr;
-		  short focusBoxAddr;
-		  short mainAxixDegreeAddr;
-		  short pulseBaseAddr;
-		  short measureBassAddr;
+	char currSelectedIndex;
+	char SelectedIndexMax;
+	s32  currMainAxisInPulse[4];
+protected://for UI
+	int  testCount;
+	int  rotateCount;
+	bool editing;
+
+	short inputPulseAddr[4];
+	short inputDegreeAddr[4];
+	short triIconAddr;
+	short focusBoxAddr;
+	short mainAxixDegreeAddr;
+	short pulseBaseAddr;
+	short measureBassAddr;
 };
 #endif

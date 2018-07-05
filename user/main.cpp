@@ -25,85 +25,89 @@ extern "C"{
 #include "../page/page12.h"
 
 #include "../setting/setting.h"
-char tempBuff3[1024];
+
+#define UART_BUFF_SIZE 1024
+
+char uart3Buff[UART_BUFF_SIZE];
 void onReceive3(void* buff,int len){
 	char* tmp = (char*)buff;
-	//tmp[len] = 0;
-	if(len >= 1024)len = 1023;
-	for(int i = 0; i < len; ++ i){
-		tempBuff3[i] = tmp[i];
+	if(len >= UART_BUFF_SIZE){
+		LOG_W("uart3 buffer size(%d) is not enough : %d",UART_BUFF_SIZE,len);
+		len = UART_BUFF_SIZE - 1;
 	}
-	tempBuff3[len] = 0;
-	PostEvent(UART3,0,len,tempBuff3);
-	//LOG_I("recevied %d %s",len,tmp);
+	for(int i = 0; i < len; ++ i){
+		uart3Buff[i] = tmp[i];
+	}
+	uart3Buff[len] = 0;
+	PostEvent(UART3,0,len,uart3Buff);
 }
 
-char tempBuff2[1024];
+char uart2Buff[UART_BUFF_SIZE];
 void onReceive2(void* buff,int len){
 	char* tmp = (char*)buff;
-	//tmp[len] = 0;
-	if(len >= 1024)len = 1023;
-	for(int i = 0; i < len; ++ i){
-		tempBuff2[i] = tmp[i];
+	if(len >= UART_BUFF_SIZE){
+		LOG_W("uart2 buffer size(%d) is not enough : %d",UART_BUFF_SIZE,len);
+		len = UART_BUFF_SIZE - 1;
 	}
-	tempBuff2[len] = 0;
-	PostEvent(UART2,0,len,tempBuff2);
-	//LOG_I("recevied %d %s",len,tmp);
+	for(int i = 0; i < len; ++ i){
+		uart2Buff[i] = tmp[i];
+	}
+	uart2Buff[len] = 0;
+	PostEvent(UART2,0,len,uart2Buff);
 }
 
 void onExitInterupt(char port,char index){
 	char data = GPIO_ReadInputData(GPIOA) & 0xC0;
 	PostEvent(EXITR,data,index,0);
 }
+
 void onTimer2Callback(void* ){
 	PostEvent(Timer2,0,0,0);
 }
-void onTimer7Callback(void* ){
-	Setting::incRoundPerMinTicks();
+
+void onTimer7Callback(void* ){// main axis reader
+	Setting::incRoundPerMinTicks(); //ticks every 0.02 second
 	u32 axisDegree = (ext::Fpga::Read(1) << 8) | ext::Fpga::Read(0);
 	PostEvent(Timer1,Setting::getRoundPerMinTicks(),axisDegree,0);
 }
-char uart3TxBuffer[1024];
-char uart3RxBuffer[1024];
-char uart2TxBuffer[1024];
-char uart2RxBuffer[1024];
+
+char uart3TxBuffer[UART_BUFF_SIZE];
+char uart3RxBuffer[UART_BUFF_SIZE];
+char uart2TxBuffer[UART_BUFF_SIZE];
+char uart2RxBuffer[UART_BUFF_SIZE];
 
 char LedRead[] = {0xA5,0x5A,0x03,0x81,0x03,0x02};
 char KeyCode[] = {0xA5,0x5A,0x03,0x80,0x4F,0x01};
 char BeepCode[] = {0xA5,0x5A,0x03,0x80,0x02,0xC8};
-   Page0 page0;
-	 Page1 page1;
-	 Page2 page2;
-	 Page3 page3;
-	 Page4 page4;
-	 Page5 page5;
-	 Page6 page6;
-	 Page7 page7;
-	 Page8 page8;
-     Page9 page9;
-     Page10 page10;
-     Page11 page11;
-     Page12 page12;
+
+Page0 page0;
+Page1 page1;
+Page2 page2;
+Page3 page3;
+Page4 page4;
+Page5 page5;
+Page6 page6;
+Page7 page7;
+Page8 page8;
+Page9 page9;
+Page10 page10;
+Page11 page11;
+Page12 page12;
+
  int main(void)
- {		
-	 u16 axisDegree = 0;
-	 delay_init();	   	 	  //��ʱ������ʼ��	
-   Page* page = 0;
-	 Page* pages[] = {&page0,&page1,&page2,&page3,&page4,&page5,&page6,&page7,&page8,&page9,&page10,&page11,&page12};
-	 int l1 = sizeof(int);
-	 int le = sizeof(signed long);
-	 LOG_I("%d,%d",l1,le);
-	 //page = pages[2];
-	 //page->handleEnter();
-	 
+ {
+	delay_init();	   	 	  
+	Page* page = 0;
+	Page* pages[] = {&page0,&page1,&page2,&page3,&page4,&page5,&page6,&page7,&page8,&page9,&page10,&page11,&page12};
+
 	NVIC_Configuration(); //����NVIC�жϷ���2:2λ��ռ���ȼ���2λ��Ӧ���ȼ�
-	UART3_Init(115200,onReceive3,uart3RxBuffer,1024, uart3TxBuffer,1024);	  //���ڳ�ʼ��Ϊ115200(������)
-	UART2_Init(115200,onReceive2,uart2RxBuffer,1024, uart2TxBuffer,1024);	  //���ڳ�ʼ��Ϊ115200(������)
- 	ENCODER_Init(onExitInterupt);
+	UART3_Init(115200,onReceive3,uart3RxBuffer,sizeof(uart3RxBuffer), uart3TxBuffer,sizeof(uart3TxBuffer));	  //���ڳ�ʼ��Ϊ115200(������)
+	UART2_Init(115200,onReceive2,uart2RxBuffer,sizeof(uart2RxBuffer), uart2TxBuffer,sizeof(uart2TxBuffer));	  //���ڳ�ʼ��Ϊ115200(������)
+	ENCODER_Init(onExitInterupt);
 	ext::Led::Init();
 	ext::Fpga::Init();
 	lcd::reset();
-  delay_ms(200);
+	delay_ms(200);
 	LOG_I("Reset");
 
 	SysTick_Config(1024 * 1024 * 1);
@@ -112,11 +116,11 @@ char BeepCode[] = {0xA5,0x5A,0x03,0x80,0x02,0xC8};
 	
 	page = pages[0];
 	page->handleEnter();
-	Timer2_Init(200,36000,onTimer2Callback,0);
-	Timer7_Init(40,36000,onTimer7Callback,0);//0.02 s 
+	Timer2_Init(200,36000,onTimer2Callback,0); //0.1s per interrupt in 72M osc
+	Timer7_Init(40,36000,onTimer7Callback,0);//0.02 s per interrupt in 72M osc
 	
 	FPGA_RESET();
-	ext::Fpga::Write(15,0);
+	ext::Fpga::Write(15,0); //transpant mode
 	for(;;)
 	{
 		 u32 dec,hex;
@@ -131,12 +135,10 @@ char BeepCode[] = {0xA5,0x5A,0x03,0x80,0x02,0xC8};
 				 LOG_P("\r\n");
 				 UART2_SendBuffer((u8*)param,dec);
 			 }
-			 else if(type == UART2){
-				 //data received from UART2(lcd)
-				 lcd::parseCodes(tempBuff2,dec);
+			 else if(type == UART2){ //data received from UART2(lcd)
+				 lcd::parseCodes(uart2Buff,dec);
 			 }
-			 else if(type == EXITR){
-				 //interrupt from Encoder
+			 else if(type == EXITR){ //interrupt from Encoder
 				 if(page == &page12){
 					 ((Page12*)page)->handleEncoder(hex>>7);
 				 }
@@ -165,13 +167,10 @@ char BeepCode[] = {0xA5,0x5A,0x03,0x80,0x02,0xC8};
 				 page->handleTimer();
 			 }
 			 else if(type == Timer1){
-				 //��FPGA��ȡ����Ƕ�
 				 u32 ticks = hex;
-				 axisDegree = dec;//(ext::Fpga::Read(1) << 8) | ext::Fpga::Read(0);
-				 //��������Ƕ�
-				 Setting::setMainAxisAngleInPulse(axisDegree/4);
-				 //����ת��
-				 Setting::updateRoundPerMin(ticks,axisDegree);
+				 u16 axisDegreeInFpga = dec;
+				 Setting::setMainAxisAngleInPulse(axisDegreeInFpga/4);
+				 Setting::updateRoundPerMin(ticks,axisDegreeInFpga);
 			 }
 		 }
 		 else{

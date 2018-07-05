@@ -26,7 +26,7 @@ public:
 			  s32 combinedFixDist;
 			  s32 combinedFixPulse;
 			  Setting::getWhellFixPulse(whellDist,whellPulse);
-			  //机床转速
+			  //JiChuangZhuanSu
 			  int i = tool::convertFixed(r,0,code,20,false);
 			  i--;
 			  code[i++] = 0x8f6c;
@@ -34,27 +34,27 @@ public:
 			  code[i++] = 0x5206;
 			  code[i++] = 0xffff;
 			  lcd::displayUnicode(0x610,code,i);
-			  //主轴角度
-			  i = tool::convertPulseToAngle(a,1024,code,ARRAY_SIZE(code));
+			  //ZhuZhouJiaoDu
+			  i = tool::convertPulseToAngle(a,Setting::getPulseCountPerCircle(),code,ARRAY_SIZE(code));
 			  lcd::displayUnicode(0x620,code,i);
-			  //公母罗纹
+			  //GongMuKou
 			if(Setting::getConfigToothType() == 1){//male
-					code[0] = 0x516c;//公
+					code[0] = 0x516c;//
 					
 				}
 				else if(Setting::getConfigToothType() == 2){//female
-					code[0] = 0x6bcd;//母
+					code[0] = 0x6bcd;//
 				}
 				else{
 					LOG_E("unknown tooth type %d",Setting::getToothCount());
-					code[0] = 0x516c;//公
+					code[0] = 0x516c;//
 				}
 				code[1] = 0x6263;
 				code[2] = 0x94bb;
 				code[3] = 0x6746;
 				code[4] = 0xffff;
 				lcd::displayUnicode(0x6B0,code,4);
-				//当前牙数
+				//YaShu
 			  if(Setting::getToothCount() == 4){
 					 code[0] = 0x0034;//'4'
 				}
@@ -76,13 +76,13 @@ public:
 				code[5] = 0x6746;
 				code[6] = 0xffff;
 				lcd::displayUnicode(0x6D0,code,7);
-			  //测量修正
+			  //CeLiangXiuZheng
 				defaultInputDist = Setting::getBaseConfigInput(Setting::getDefaultBaseConfigInputIndex());
 			  Setting::getMeasureFixPulse(measureDist,measurePuls);
 				combinedFixDist = measureDist - defaultInputDist;
-				while(combinedFixDist < 0) combinedFixDist += 625;
+				combinedFixDist %= Setting::getDistUMCountPerTooth();
 				
-			  i = tool::convertFixed(combinedFixDist,100,code,20);
+			  i = tool::convertFixed(combinedFixDist,Setting::getPrecision(),code,20);
 			  i--;
 			  code[i++] = 'm';
 			  code[i++] = 'm';
@@ -96,8 +96,8 @@ public:
 			  code[i++] = 0x51b2;
 			  code[i++] = 0xffff;
 			  lcd::displayUnicode(0x640,code,i);
-			  //手轮修正
-			  i = tool::convertFixed(whellDist,100,code,20);
+			  //ShouLunXiuZheng
+			  i = tool::convertFixed(whellDist,Setting::getPrecision(),code,20);
 			  i--;
 			  code[i++] = 'm';
 			  code[i++] = 'm';
@@ -109,18 +109,17 @@ public:
 			  code[i++] = 0x51b2;
 			  code[i++] = 0xffff;
 			  lcd::displayUnicode(0x660,code,i);
-			  //合计修正距离
+			  //HeJiXiuZheng
 				totalDist = combinedFixDist + whellDist;
-				if(totalDist < 0)totalDist += 625;
-			  i = tool::convertFixed(totalDist,100,code,20); 
+				if(totalDist < 0)totalDist += Setting::getDistUMCountPerTooth();
+			  i = tool::convertFixed(totalDist,Setting::getPrecision(),code,20); 
 			  i--;
 			  code[i++] = 'm';
 			  code[i++] = 'm';
 			  code[i++] = 0xffff;
 			  lcd::displayUnicode(0x690,code,i);
 				total = combinedFixPulse + whellPulse;
-				total %= 1024;
-				if(total < 0)total += 1024;
+				total %= Setting::getPulseCountPerCircle();
 				i = tool::convertFixed(total,0,code,20);
 			  i--;
 			  code[i++] = 0x8109;
@@ -133,7 +132,7 @@ public:
 		void displayState(){
 			short code[20];
 			int i = 0;
-			if(state == 0){//未开始加工
+			if(state == 0){//未锟斤拷始锟接癸拷
 					code[0] = 0x672a;
 					code[1] = 0x5f00;
 					code[2] = 0x59cb;
@@ -142,7 +141,7 @@ public:
 					code[5] = 0xffff;
 					i = 6;
 				}
-				else if(state == 1){//正在加工..
+				else if(state == 1){//锟斤拷锟节加癸拷..
 					code[0] = 0x6b63;
 					code[1] = 0x5728;
 					code[2] = 0x52a0;
@@ -153,7 +152,7 @@ public:
 					code[7] = 0xffff;
 					i = 8;
 				}
-				else{//加工结束
+				else{//锟接癸拷锟斤拷锟斤拷
 					code[0] = 0x52a0;
 					code[1] = 0x5de5;
 					code[2] = 0x7ed3;
@@ -201,51 +200,51 @@ public:
 					  FPGA_RESET();
 					  LOG_I("reset fpga 0x%x",total);
 						return ext::None;
-					//
-					case ext::Numb_0:
-							data = ext::Fpga::Read(0);
-						  LOG_I("read 0x%x",data);
-						  break;
-						 case ext::Numb_1:
-							data = ext::Fpga::Read(1);
-						  LOG_I("read 0x%x",data);
-						  break;
-						 case ext::Numb_2:
-						  ext::Fpga::Write(2,total);
-						  LOG_I("addr 2 write:0x%x",(u8)total);
-						  break;
-						 case ext::Numb_3:
-							ext::Fpga::Write(3,total>>8);
-						  LOG_I("addr 3 write:0x%x",total>>8);
-						  break;
-						 case ext::Numb_4:
-							data = ext::Fpga::Read(2);
-						  LOG_I("read from addr 2: 0x%x",data);
-						  break;
-						 case ext::Numb_5:
-							data = ext::Fpga::Read(3);
-						  LOG_I("read from addr 3: 0x%x",data);
-						  break;
-						 case ext::Numb_6:
-							ext::Fpga::Write(15,0);
-						  LOG_I("addr 15 write:0");
-						  break;
-						 case ext::Numb_7:
-							ext::Fpga::Write(15,1);
-						  LOG_I("addr 15 write:1");
-						  break;
-						 case ext::Numb_8:
-							ext::Fpga::Write(15,2);
-						  LOG_I("addr 15 write:2");
-						  break;
-						 case ext::Numb_9:
-							data = ext::Fpga::Read(15);
-						  LOG_I("read from addr 0xf: 0x%x",data);
-						  break;
-						 case ext::Numb_Dot:
-							ext::Fpga::Write(2,total);
-						  ext::Fpga::Write(3,total>>8);
-						break;
+					// below is to debut fpga
+					// case ext::Numb_0:
+					// 		data = ext::Fpga::Read(0);
+					// 	  LOG_I("read 0x%x",data);
+					// 	  break;
+					// 	 case ext::Numb_1:
+					// 		data = ext::Fpga::Read(1);
+					// 	  LOG_I("read 0x%x",data);
+					// 	  break;
+					// 	 case ext::Numb_2:
+					// 	  ext::Fpga::Write(2,total);
+					// 	  LOG_I("addr 2 write:0x%x",(u8)total);
+					// 	  break;
+					// 	 case ext::Numb_3:
+					// 		ext::Fpga::Write(3,total>>8);
+					// 	  LOG_I("addr 3 write:0x%x",total>>8);
+					// 	  break;
+					// 	 case ext::Numb_4:
+					// 		data = ext::Fpga::Read(2);
+					// 	  LOG_I("read from addr 2: 0x%x",data);
+					// 	  break;
+					// 	 case ext::Numb_5:
+					// 		data = ext::Fpga::Read(3);
+					// 	  LOG_I("read from addr 3: 0x%x",data);
+					// 	  break;
+					// 	 case ext::Numb_6:
+					// 		ext::Fpga::Write(15,0);
+					// 	  LOG_I("addr 15 write:0");
+					// 	  break;
+					// 	 case ext::Numb_7:
+					// 		ext::Fpga::Write(15,1);
+					// 	  LOG_I("addr 15 write:1");
+					// 	  break;
+					// 	 case ext::Numb_8:
+					// 		ext::Fpga::Write(15,2);
+					// 	  LOG_I("addr 15 write:2");
+					// 	  break;
+					// 	 case ext::Numb_9:
+					// 		data = ext::Fpga::Read(15);
+					// 	  LOG_I("read from addr 0xf: 0x%x",data);
+					// 	  break;
+					// 	 case ext::Numb_Dot:
+					// 		ext::Fpga::Write(2,total);
+					// 	  ext::Fpga::Write(3,total>>8);
+					// 	break;
 				}
 			return cmd;
 		}
