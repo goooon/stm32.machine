@@ -96,6 +96,38 @@ Page12 page12;
 
  int main(void)
  {
+	 s32 ir = -1;
+	 s32 s1024 = 1024;
+	 u32 u1024 = 1024;
+	 s32 uir = ir % u1024;
+	 s32 sir = ir % s1024;
+	 
+	 s32 defaultInputDist = 6000;
+	 s32 defaultMainAxisInPulse = 583;
+	 
+	 s32 measureDist = 6960;
+	 s32 measurePuls = 430;
+	 //6000
+	 s32 Db = defaultInputDist;//基准的距离数字
+	 //3615
+	 s32 Ab0 = defaultMainAxisInPulse * Setting::getDistUMCountPerTooth() /Setting::getPulseCountPerCircle();//基准的角度脉冲*6350/1024
+				
+	 //6960
+	 s32 Dm = measureDist;//测量的距离数字
+	 //2666
+	 s32 Am0 = measurePuls * Setting::getDistUMCountPerTooth() / Setting::getPulseCountPerCircle();//测量的角度脉冲*6350/1024
+				
+	 s32 Fix_b = Ab0 + ((s32)1000000 - Db);//基准的计算到零角度距离
+	 s32 Fix_m = Am0 + ((s32)1000000 - Dm);//测量的计算到零角度距离
+				
+	 s32 Fix = Fix_m - Fix_b;//基准的和测量的零度距离差
+				
+	 Fix %= Setting::getDistUMCountPerTooth();//6350取余
+	 Fix += Setting::getDistUMCountPerTooth();//自加一个6350
+	 Fix %= Setting::getDistUMCountPerTooth();//6350取余
+	 
+	 printf("Fix %d",Fix);
+	 
 	delay_init();	   	 	  
 	Page* page = 0;
 	Page* pages[] = {&page0,&page1,&page2,&page3,&page4,&page5,&page6,&page7,&page8,&page9,&page10,&page11,&page12};
@@ -105,6 +137,9 @@ Page12 page12;
 	UART2_Init(115200,onReceive2,uart2RxBuffer,sizeof(uart2RxBuffer), uart2TxBuffer,sizeof(uart2TxBuffer));	  //���ڳ�ʼ��Ϊ115200(������)
 	ENCODER_Init(onExitInterupt);
 	ext::Led::Init();
+	ext::Led::SetLed(ext::Led::LED_1,true);
+	ext::Led::SetLed(ext::Led::LED_2,true);
+	ext::Led::SetLed(ext::Led::LED_3,true);
 	ext::Fpga::Init();
 	lcd::reset();
 	delay_ms(200);
@@ -113,6 +148,7 @@ Page12 page12;
 	SysTick_Config(1024 * 1024 * 1);
 	Setting::initSetting();
 	ext::Keyboard::Init();
+	//ext::Led::SetLed(0);
 	
 	page = pages[0];
 	page->handleEnter();
@@ -121,6 +157,9 @@ Page12 page12;
 	
 	FPGA_RESET();
 	ext::Fpga::Write(15,0); //transpant mode
+	ext::Led::SetLed(ext::Led::LED_1,false);
+	ext::Led::SetLed(ext::Led::LED_2,false);
+	ext::Led::SetLed(ext::Led::LED_3,false);
 	for(;;)
 	{
 		 u32 dec,hex;

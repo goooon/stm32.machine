@@ -13,13 +13,15 @@ public:
 			 u32 angle = Setting::getMainAxisAngleInPulse();
 			 display(roundPerMin,angle);
 			 state = 0;
+			 ext::Led::SetLed(ext::Led::ProcessingLed,false);
 		}
 		virtual void leave(){
 			
 		}
-		void display(u32 r,u32 a){
+		void display(u32 r,u32 curAngle){
 			  short code[20];
 			  s32 defaultInputDist;
+			  s32 defaultMainAxisInPulse;
 			  u32 measureDist,measurePuls;
 			  s32 whellDist,whellPulse;
 			  s32 totalDist;
@@ -35,10 +37,10 @@ public:
 			  code[i++] = 0xffff;
 			  lcd::displayUnicode(0x610,code,i);
 			  //ZhuZhouJiaoDu
-			  i = tool::convertPulseToAngle(a,Setting::getPulseCountPerCircle(),code,ARRAY_SIZE(code));
+			  i = tool::convertPulseToAngle(curAngle,Setting::getPulseCountPerCircle(),code,ARRAY_SIZE(code));
 			  lcd::displayUnicode(0x620,code,i);
 			  //GongMuKou
-			if(Setting::getConfigToothType() == 1){//male
+			  if(Setting::getConfigToothType() == 1){//male
 					code[0] = 0x516c;//
 					
 				}
@@ -77,11 +79,30 @@ public:
 				code[6] = 0xffff;
 				lcd::displayUnicode(0x6D0,code,7);
 			  //CeLiangXiuZheng
-				defaultInputDist = Setting::getBaseConfigInput(Setting::getDefaultBaseConfigInputIndex());
+				defaultInputDist = Setting::getBaseConfigInput(Setting::getDefaultBaseConfigInputIndex(),defaultMainAxisInPulse);
 			  Setting::getMeasureFixPulse(measureDist,measurePuls);
-				combinedFixDist = measureDist - defaultInputDist;
-				combinedFixDist %= Setting::getDistUMCountPerTooth();
+				s32 p1 = Setting::getPulseCountPerCircle() - (measurePuls + Setting::getPulseCountPerCircle() - defaultMainAxisInPulse);
+				s32 p2 = Setting::distUMToPulse(measureDist + Setting::getDistUMCountPerTooth() - defaultInputDist);
+				combinedFixPulse =  (p1 + p2) % Setting::getPulseCountPerCircle();
 				
+				s32 Db = defaultInputDist;//基准的距离数字
+				s32 Ab0 = defaultMainAxisInPulse * Setting::getDistUMCountPerTooth() /Setting::getPulseCountPerCircle();//基准的角度脉冲*6350/1024
+				
+				s32 Dm = measureDist;//测量的距离数字
+				s32 Am0 = measurePuls * Setting::getDistUMCountPerTooth() / Setting::getPulseCountPerCircle();//测量的角度脉冲*6350/1024
+				
+				s32 Fix_b = Ab0 + ((s32)1000000 - Db);//基准的计算到零角度距离
+				s32 Fix_m = Am0 + ((s32)1000000 - Dm);//测量的计算到零角度距离
+				
+				s32 Fix = Fix_m - Fix_b;//基准的和测量的零度距离差
+				
+				Fix %= Setting::getDistUMCountPerTooth();//6350取余
+				Fix += Setting::getDistUMCountPerTooth();//自加一个6350
+				Fix %= Setting::getDistUMCountPerTooth();//6350取余
+				
+				//combinedFixDist = measureDist - defaultInputDist;
+				//combinedFixDist = Setting::pulseToDistUM(combinedFixPulse);
+				combinedFixDist = Fix;
 			  i = tool::convertFixed(combinedFixDist,Setting::getPrecision(),code,20);
 			  i--;
 			  code[i++] = 'm';
@@ -89,13 +110,14 @@ public:
 			  code[i++] = 0xffff;
 			  lcd::displayUnicode(0x630,code,i);
 				
-				combinedFixPulse = Setting::calcDegreePulse(combinedFixDist);
+				combinedFixPulse = Setting::distUMToPulse(Fix);//距离差换算脉冲
 			  i = tool::convertFixed(combinedFixPulse,0,code,20);
 			  i--;
 			  code[i++] = 0x8109;
 			  code[i++] = 0x51b2;
 			  code[i++] = 0xffff;
 			  lcd::displayUnicode(0x640,code,i);
+				
 			  //ShouLunXiuZheng
 			  i = tool::convertFixed(whellDist,Setting::getPrecision(),code,20);
 			  i--;
@@ -177,16 +199,24 @@ public:
 						return ext::None;
 						break;
 					case ext::CMD_KnifeFix:
+						if(state == 1){
+							return ext::None;
+						}
 						lcd::jumpToPage(11);
 						return ext::None;
 						break;
 					case ext::CMD_WheelFix:
+						if(state == 1){
+							return ext::None;
+						}
 						lcd::jumpToPage(12);
 						return ext::None;
 						break;
 					case ext::CMD_Start:
 						state = 1;
 					  displayState();
+					  ext::Led::SetLed(ext::Led::ProcessingLed,true);
+						ext::Led::SetLed(ext::Led::TranspantLed,false);
 						FPGA_CONFIG();
 						FPGA_SET_DELAYED_PULSE(total);
 					  FPGA_START_WORKING();
@@ -195,6 +225,8 @@ public:
 						break;
 					case ext::CMD_Stop:
 						state = 2;
+					  ext::Led::SetLed(ext::Led::ProcessingLed,false);
+					  ext::Led::SetLed(ext::Led::TranspantLed,true);
 						displayState();
 						FPGA_SET_DELAYED_PULSE(0);
 					  FPGA_RESET();

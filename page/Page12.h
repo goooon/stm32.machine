@@ -4,6 +4,8 @@
 #include "../api/lcd.h"
 #include "../api/Tool.h"
 #include "../setting/Setting.h"
+#include "../api/Led.h"
+
 //���ֵ���
 void callback(void){
 }
@@ -21,6 +23,7 @@ public:
 		index = 1;
 		updateIcon();
 		display();
+		ext::Led::SetLed(ext::Led::WheelFixLed,false);
 		//Timer7_Init(2000,36000,callback,0);
 	}
 	virtual void leave(){
@@ -112,6 +115,12 @@ public:
 			 //lcd::sendAddrValue(0x1240,count);
 			 //short code[] = {0x002b,0x0031,0x002d,0x0032,0x0033,0x0034,0x4f60,0x597d};
 			 display();
+			 if(count != 0){
+				 ext::Led::SetLed(ext::Led::WheelFixLed,true);
+			 }
+			 else{
+				 ext::Led::SetLed(ext::Led::WheelFixLed,false);
+			 }
 		}
 	private:
 		s32 count;

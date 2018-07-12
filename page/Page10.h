@@ -38,10 +38,10 @@ public:
 							editing = false;
 							checkAndFillInput(currSelectedIndex);
 							Setting::setMeasureFixPulse(inputDistUM[currSelectedIndex],Setting::calcDegreePulse(inputDistUM[currSelectedIndex]));
-					    Setting::setBaseConfigInput(0,inputDistUM[0]);
-					    Setting::setBaseConfigInput(1,inputDistUM[1]);
-					    Setting::setBaseConfigInput(2,inputDistUM[2]);
-					    Setting::setBaseConfigInput(3,inputDistUM[3]);
+					    Setting::setBaseConfigInput(0,inputDistUM[0],currMainAxisInPulse[0]);
+					    Setting::setBaseConfigInput(1,inputDistUM[1],currMainAxisInPulse[1]);
+					    Setting::setBaseConfigInput(2,inputDistUM[2],currMainAxisInPulse[2]);
+					    Setting::setBaseConfigInput(3,inputDistUM[3],currMainAxisInPulse[3]);
 					    Setting::setDefaultBaseConfigInputIndex(currSelectedIndex);
 							Setting::saveToFlash();
 							lcd::jumpToPage(3);

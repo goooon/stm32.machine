@@ -10,8 +10,8 @@ enum ToothType{
 class Setting
 {
 public:
-    static u32  getPulseCountPerCircle();
-    static u32  getDistUMCountPerTooth();
+    static s32  getPulseCountPerCircle();
+    static s32  getDistUMCountPerTooth();
     static void initSetting();
     static void setMeasureFixPulse(u32 dist,u32 count);
     static void getMeasureFixPulse(u32& dist,u32& count);
@@ -25,15 +25,16 @@ public:
     static u32  getInput(u32 i);
     static void setInput(u32 i,u32 u);
 
-    static void setBaseConfigInput(u32 i,u32 v);
+    static void setBaseConfigInput(u32 i,u32 v,s32 curDegree);
     static void setDefaultBaseConfigInputIndex(u32 defautIndex);
     static u32  getDefaultBaseConfigInputIndex();
-    static u32  getBaseConfigInput(u32 i);
+    static u32  getBaseConfigInput(u32 i,s32& curDegree);
 
     static void setConfigToothType(ToothType ypte);
     static ToothType  getConfigToothType();
     static void saveToFlash();
-    static sint pulseToDistUM(sint pulse);
+		static signed long distUMToPulse(signed long distUm);
+    static signed long pulseToDistUM(signed long pulse);
 
     //static void setRoundPerMin(s32 count);
     static s32  getRoundPerMin();
@@ -45,6 +46,6 @@ public:
     static bool needPresetParameters();
     static void setNeedPresetParameters(bool need);
     static u32  calcDegreePulse(u32 distMM);
-    static u32  getPrecision();
+    static s32  getPrecision();
 };
 #endif

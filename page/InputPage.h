@@ -196,8 +196,8 @@ public:
 						  displayMeasured(currSelectedIndex);
 							break; 
 						case ext::CMD_RepeatMeas:
-							if(inputCharsLen[currSelectedIndex] == 0)return;
-							if(SelectedIndexMax >= 3)return;
+							if(inputCharsLen[currSelectedIndex] == 0)return ext::None;
+							if(SelectedIndexMax >= 3)return ext::None;
 						  else SelectedIndexMax ++;
 						
 						  checkAndFillInput(currSelectedIndex);

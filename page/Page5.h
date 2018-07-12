@@ -75,7 +75,7 @@ public:
 								}
 							  editing = false;
 								checkAndFillInput(currSelectedIndex);
-						    Setting::setMeasureFixPulse(inputDistUM[currSelectedIndex],Setting::calcDegreePulse(inputDistUM[currSelectedIndex]));
+						    Setting::setMeasureFixPulse(inputDistUM[currSelectedIndex],currMainAxisInPulse[currSelectedIndex]);
 							  lcd::jumpToPage(6);
 							  return ext::None;
 						  break;

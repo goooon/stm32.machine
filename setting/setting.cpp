@@ -20,6 +20,7 @@ struct Config{
 	  u8 toothCount;//0 means not configured
 	  u8 reserved; //0
 	  u32 input[4];// 0 means not configured
+	  s32 currMainAxisInPulse[4];
 	  u32 defaultBaseInput;//index for input[], which is currently selected
 	  u8 reserved2[3];
 	  u8 checkSum;// byte sum of all the data above
@@ -104,12 +105,19 @@ u32  Setting::getToothCount(){
 }
 static u32 g_inputs[4] = { 223,117,81,46};
 u32  Setting::getInput(u32 i){
-	 if(i > 3)return 0;
+	 if(i > 3){
+		 LOG_E("wrong getInput(%d)\r\n",i);
+		 return 0;
+	 }
 	 return g_inputs[i];
 }
-void Setting::setBaseConfigInput(u32 i,u32 v){
-	 if(i > 3)return ;
+void Setting::setBaseConfigInput(u32 i,u32 v,s32 curDegree){
+	 if(i > 3){
+		  LOG_E("wrong setBaseConfigInput(%d)\r\n",i);
+		 return ;
+	 }
 	 config.input[i] = v;
+	 config.currMainAxisInPulse[i] = curDegree;
 }
 void Setting::setDefaultBaseConfigInputIndex(u32 i)
 {
@@ -118,21 +126,29 @@ void Setting::setDefaultBaseConfigInputIndex(u32 i)
 u32  Setting::getDefaultBaseConfigInputIndex(){
 	return config.defaultBaseInput;
 }
-u32  Setting::getBaseConfigInput(u32 i){
-	 if(i > 3)return 0;
+u32  Setting::getBaseConfigInput(u32 i,s32& curDegree){
+	 curDegree = config.currMainAxisInPulse[0];
+	 if(i > 3){
+		  LOG_E("wrong getBaseConfigInput(%d)\r\n",i);
+		  return 0;
+	 }
+	 curDegree = config.currMainAxisInPulse[i];
 	 return config.input[i];
 }
 void Setting::setInput(u32 i,u32 u){
-	if(i > 3)return ;
+	if(i > 3){
+		return ;
+		LOG_E("wrong setInput(%d)\r\n",i);
+	}
 	g_inputs[i] = u;
 }
-u32  Setting::getPulseCountPerCircle(){
+s32  Setting::getPulseCountPerCircle(){
 	return 1024;
 }
-u32 Setting::getDistUMCountPerTooth(){
-	return 6250;
+s32 Setting::getDistUMCountPerTooth(){
+	return 6350;
 }
-u32  Setting::getPrecision(){
+s32  Setting::getPrecision(){
 	return 1000;
 }
 void Setting::setConfigToothType(ToothType male){
@@ -141,10 +157,14 @@ void Setting::setConfigToothType(ToothType male){
 ToothType Setting::getConfigToothType(){
 	return (ToothType)config.type;
 }
-sint Setting::pulseToDistUM(sint pulse){
-	signed long roundDist = getDistUMCountPerTooth() * Setting::getToothCount();
-	signed long dist = roundDist * pulse  / (signed long)getPulseCountPerCircle();
+signed long Setting::pulseToDistUM(signed long pulse){
+	//signed long roundDist = getDistUMCountPerTooth() * Setting::getToothCount();
+	signed long dist = getDistUMCountPerTooth() * pulse  / (signed long)getPulseCountPerCircle();
 	return dist;
+}
+signed long Setting::distUMToPulse(signed long distUm){
+	signed long ret = (signed long)getPulseCountPerCircle() * (signed long)distUm/getDistUMCountPerTooth();
+	return ret;
 }
 static s32 axisDegreeQueue[3];
 static u32 axisTicksQueue[3];
@@ -195,11 +215,12 @@ u32 Setting::calcDegreePulse(u32 distMM){
 	u32 roundPulse = Setting::getPulseCountPerCircle();
 	u32 distPerTooth = getDistUMCountPerTooth();
 	u32 pulseDegree = Setting::getMainAxisAngleInPulse();
+	
 	int result;
 	int fixedForToothPulse = 0;
-	int x = distPerTooth * (roundPulse - pulseDegree) / roundPulse;
-	int releativeDist = distMM - x;
-	while(releativeDist < 0) releativeDist += distPerTooth;
+	int x = distPerTooth * pulseDegree / roundPulse;
+	int releativeDist = distMM + x;
+	//while(releativeDist < 0) releativeDist += distPerTooth;
 
 	fixedForToothPulse = roundPulse * releativeDist / distPerTooth;
 	result = fixedForToothPulse % roundPulse;

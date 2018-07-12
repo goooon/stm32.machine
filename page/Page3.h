@@ -3,6 +3,7 @@
 #include "./Page.h"
 #include "../api/lcd.h"
 #include "../setting/Setting.h"
+#include "../api/Led.h"
 class Page3 : public Page
 {
 public:
@@ -15,6 +16,7 @@ public:
 			dispToothType();
 			dispToothCoverType();
 			u32 toothCount = Setting::getToothCount();
+			ext::Led::SetLed(ext::Led::TranspantLed,true);
 		}
 		void dispToothDist(){
 			short code[20];
