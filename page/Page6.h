@@ -11,9 +11,12 @@ public:
 		virtual void enter(){
 			 u32 roundPerMin = Setting::getRoundPerMin();
 			 u32 angle = Setting::getMainAxisAngleInPulse();
-			 display(roundPerMin,angle);
 			 state = 0;
+			
+			 display(roundPerMin,angle);
 			 ext::Led::SetLed(ext::Led::ProcessingLed,false);
+			
+			 
 		}
 		virtual void leave(){
 			
@@ -81,7 +84,7 @@ public:
 			  //CeLiangXiuZheng
 				defaultInputDist = Setting::getBaseConfigInput(Setting::getDefaultBaseConfigInputIndex(),defaultMainAxisInPulse);
 			  Setting::getMeasureFixPulse(measureDist,measurePuls);
-				s32 p1 = Setting::getPulseCountPerCircle() - (measurePuls + Setting::getPulseCountPerCircle() - defaultMainAxisInPulse);
+				/*s32 p1 = Setting::getPulseCountPerCircle() - (measurePuls + Setting::getPulseCountPerCircle() - defaultMainAxisInPulse);
 				s32 p2 = Setting::distUMToPulse(measureDist + Setting::getDistUMCountPerTooth() - defaultInputDist);
 				combinedFixPulse =  (p1 + p2) % Setting::getPulseCountPerCircle();
 				
@@ -96,21 +99,23 @@ public:
 				
 				s32 Fix = Fix_m - Fix_b;//基准的和测量的零度距离差
 				
-				Fix %= Setting::getDistUMCountPerTooth();//6350取余
-				Fix += Setting::getDistUMCountPerTooth();//自加一个6350
-				Fix %= Setting::getDistUMCountPerTooth();//6350取余
+				Fix %= (s32)Setting::getDistUMCountPerTooth();//6350取余
+				Fix += (s32)Setting::getDistUMCountPerTooth();//自加一个6350
+				Fix %= (s32)Setting::getDistUMCountPerTooth();//6350取余
 				
 				//combinedFixDist = measureDist - defaultInputDist;
 				//combinedFixDist = Setting::pulseToDistUM(combinedFixPulse);
-				combinedFixDist = Fix;
-			  i = tool::convertFixed(combinedFixDist,Setting::getPrecision(),code,20);
+				combinedFixPulse = Fix  * Setting::getPulseCountPerCircle() / Setting::getDistUMCountPerTooth();*/
+				combinedFixPulse = Setting::calculateDelayedPulse(defaultMainAxisInPulse,defaultInputDist,measurePuls,measureDist);
+			  combinedFixDist = Setting::pulseToDistUM(combinedFixPulse);
+				i = tool::convertFixed(combinedFixDist,Setting::getPrecision(),code,20);
 			  i--;
 			  code[i++] = 'm';
 			  code[i++] = 'm';
 			  code[i++] = 0xffff;
 			  lcd::displayUnicode(0x630,code,i);
 				
-				combinedFixPulse = Setting::distUMToPulse(Fix);//距离差换算脉冲
+				//combinedFixPulse = Setting::distUMToPulse(Fix);//距离差换算脉冲
 			  i = tool::convertFixed(combinedFixPulse,0,code,20);
 			  i--;
 			  code[i++] = 0x8109;
@@ -230,6 +235,9 @@ public:
 						displayState();
 						FPGA_SET_DELAYED_PULSE(0);
 					  FPGA_RESET();
+					  Setting::setWhellFixPulse(0,0);
+						lcd::jumpToPage(5);
+						FPGA_CONFIG();
 					  LOG_I("reset fpga 0x%x",total);
 						return ext::None;
 					// below is to debut fpga

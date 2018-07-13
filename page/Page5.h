@@ -69,6 +69,14 @@ public:
 						case ext::CMD_RepeatMeas:
 							InputPage::onKeyPressed(cmd);
 						break;
+						case ext::CMD_Enter:
+							if(!haveValidInput()){
+									return ext::None;
+							}
+							editing = false;
+						  hideAllEditorFocus();
+						  checkAndFillInput(currSelectedIndex);
+						  break;
 						case ext::CMD_Input:
 							  if(!haveValidInput()){
 									return ext::None;

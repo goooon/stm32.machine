@@ -23,7 +23,7 @@ public:
 			int i = 0;
 			code[i++] = 0x0036;
 			code[i++] = 0x002e;
-			code[i++] = 0x0032;
+			code[i++] = 0x0033;
 			code[i++] = 0x0035;
 			code[i++] = 0x006d;
 			code[i++] = 0x006d;
@@ -71,7 +71,7 @@ public:
 		{
 				LOG_I("key pressed:%c",cmd);
 			  switch(cmd){
-					  case ext::CMD_Input:
+					  case ext::CMD_Start:
 							lcd::jumpToPage(5);
 							break;
 						case ext::CMD_Setting:

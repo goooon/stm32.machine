@@ -58,10 +58,16 @@ public:
 			  int uiRowAddrIndex = 3 - index;
 			  short code[20];
 			  int len = 0;
-			  if(inputCharsLen[index] != 0){
+			  if(inputCharsLen[index] != 0 || editing){
 					//int pulseToFix = calcDegreePulse(numb);
 					//len = tool::convertPulseToAngle(pulseToFix,Setting::getPulseCountPerCircle(),code,ARRAY_SIZE(code));
-					len = tool::convertPulseToAngle(currMainAxisInPulse[index],Setting::getPulseCountPerCircle(),code,ARRAY_SIZE(code));
+					if(inputCharsLen[index] == 0 && index != currSelectedIndex){
+						 code[0] = 0xFFFF;
+					   len = 1;
+					}
+					else{
+						len = tool::convertPulseToAngle(currMainAxisInPulse[index],Setting::getPulseCountPerCircle(),code,ARRAY_SIZE(code));
+					}
 				}
 				else{
 					code[0] = 0xFFFF;
@@ -70,17 +76,22 @@ public:
 				lcd::displayUnicode(inputDegreeAddr[uiRowAddrIndex],code,len);
 		}
 		//�����Ӧ���������
-		void displayFixedPulse(int index,u32 numb){
+		void displayFixedPulse(int index,u32 numb){//dist to zero
 			  int uiRowAddrIndex = 3 - index;
 				short code[20];
 				char offset[] = {31,27,23,19,15,11,7,3,0,0,0,0,0};
 				int len = 0;
 				if(inputCharsLen[index] != 0){
-					int pulseToFix = Setting::calcDegreePulse(numb);
-					len = tool::convertFixed(pulseToFix,0,code,20,false);
+					//int pulseToFix = Setting::calcDegreePulse(numb);
+					//int dist = Setting::pulseToDistUM(pulseToFix);
+					s32 dist = Setting::calcDistToZero(numb,currMainAxisInPulse[index]);
+					if(dist > Setting::getDistUMCountPerTooth() / 2){
+						dist -= Setting::getDistUMCountPerTooth();
+					}
+					len = tool::convertFixed(dist,Setting::getPrecision(),code,20,false);
 					len --;
-					code[len++] = 0x8109;
-					code[len++] = 0x51b2;
+					code[len++] = 'm';
+					code[len++] = 'm';
 					code[len++] = 0xffff;
 				}
 				else{
@@ -166,18 +177,34 @@ public:
 										}
 									}
 								}
-								if(cmd != '.'){
+								/*if(cmd != '.'){
 									unsigned long temp = inputDistUM[currSelectedIndex] * 10 + ((short)cmd - '0');
 									if(temp > INPUT_NUMB_MAX)break;
 									if(temp == 0 && inputCharsLen[currSelectedIndex] > 2)break;
 									inputDistUM[currSelectedIndex] = temp;
-								}
+								}*/
+								
 								inputChars[currSelectedIndex][inputCharsLen[currSelectedIndex]] = (short)cmd;
 								inputCharsLen[currSelectedIndex]++;
+								s32 currFixedDist = 0;
+								for(int i = 0; i < inputCharsLen[currSelectedIndex]; ++ i){
+									  if(inputChars[currSelectedIndex][i] != '.'){
+											 s32 c = inputChars[currSelectedIndex][i];
+											 currFixedDist = currFixedDist * 10 + c - '0';
+										}
+								}
+								
 								inputChars[currSelectedIndex][inputCharsLen[currSelectedIndex]] = 0xFFFF;
 								
 								displayMeasured(currSelectedIndex);
-								checkAndFillInputWhenEditing(currSelectedIndex);
+								//s32 currFixedDist = inputDistUM[currSelectedIndex];
+								inputDistUM[currSelectedIndex] = currFixedDist;
+								if(inputChars[currSelectedIndex][inputCharsLen[currSelectedIndex] - 1] == '.')inputDistUM[currSelectedIndex] *= 1000;
+								else if(inputChars[currSelectedIndex][inputCharsLen[currSelectedIndex] - 2] == '.')inputDistUM[currSelectedIndex] *= 100;
+								else if(inputChars[currSelectedIndex][inputCharsLen[currSelectedIndex] - 3] == '.')inputDistUM[currSelectedIndex] *= 10;
+								else if(inputChars[currSelectedIndex][inputCharsLen[currSelectedIndex] - 4] == '.')inputDistUM[currSelectedIndex] *= 1;
+								else inputDistUM[currSelectedIndex] *= 1000;
+								checkAndFillInputWhenEditing(currSelectedIndex,currFixedDist);
 						  }
 							break;
 						case ext::CMD_Backspace:
@@ -187,7 +214,7 @@ public:
 						  inputCharsLen[currSelectedIndex] = 0;
 						  currMainAxisInPulse[currSelectedIndex] = Setting::getMainAxisAngleInPulse();
 						  displayMeasured(currSelectedIndex);
-						  checkAndFillInputWhenEditing(currSelectedIndex);
+						  checkAndFillInputWhenEditing(currSelectedIndex,inputDistUM[currSelectedIndex]);
 						  displayEditorFocus(currSelectedIndex);
 							break;
 					  case ext::CMD_Measure:
@@ -210,6 +237,14 @@ public:
 						  currSelectedIndex = SelectedIndexMax;
 						  lcd::sendAddrValue(triIconAddr,triIconBitSelectionMask);
 						  displayEditorFocus(currSelectedIndex);
+							break;
+						case ext::CMD_Enter:
+							editing = false;
+						  hideAllEditorFocus();
+						  checkAndFillInput(currSelectedIndex);
+						
+						  displayFixedDigree(currSelectedIndex,inputDistUM[currSelectedIndex]);
+							displayFixedPulse(currSelectedIndex,inputDistUM[currSelectedIndex]);
 							break;
 						case ext::CMD_Up:
 							if(editing){
@@ -243,9 +278,9 @@ public:
 				}
 				return ext::None;
 		}
-		void checkAndFillInputWhenEditing(int index){
+		void checkAndFillInputWhenEditing(int index,int currMeas){
 			 u32 inputLen = inputCharsLen[index];
-			 u32 inputNum = inputDistUM[currSelectedIndex];
+			 u32 inputNum = currMeas;//
 			 short inputMax[MAX_INPUT_LEN + 3];
 			 for(int i = 0; i < MAX_INPUT_LEN + 3; ++i){
 				  inputMax[i] = inputChars[currSelectedIndex][i];
@@ -346,7 +381,7 @@ public:
 				 if(inputChars[currSelectedIndex][0] == '.'|| // .a -> .a0
 					  inputChars[currSelectedIndex][1] == '.'){  // x. -> x.0
 						inputChars[currSelectedIndex][2] = '0';
-					  inputDistUM[currSelectedIndex] = inputDistUM[currSelectedIndex] * 10;
+					  //inputDistUM[currSelectedIndex] = inputDistUM[currSelectedIndex] * 10;
 				 }
 				 else{																						// yx -> yx.
 					  inputChars[currSelectedIndex][2] = '.';
@@ -358,7 +393,7 @@ public:
 					  inputChars[currSelectedIndex][1] == '.' || // x.a -> x.a0
 				    inputChars[currSelectedIndex][2] == '.' ){ // yx. -> yx.0
 						inputChars[currSelectedIndex][3] == '0';
-					  inputDistUM[currSelectedIndex] = inputDistUM[currSelectedIndex] * 10;
+					  //inputDistUM[currSelectedIndex] = inputDistUM[currSelectedIndex] * 10;
 				 }
 				 else{																						// wyx -> wyx.
 					  inputChars[currSelectedIndex][2] = '.';
@@ -376,19 +411,19 @@ public:
 						inputChars[currSelectedIndex][inputCharsLen[currSelectedIndex]] = '0';
 						inputCharsLen[currSelectedIndex] ++;
 						inputChars[currSelectedIndex][inputCharsLen[currSelectedIndex]] = 0xFFFF;
-						inputDistUM[currSelectedIndex] = inputDistUM[currSelectedIndex] * 10;
+						//inputDistUM[currSelectedIndex] = inputDistUM[currSelectedIndex] * 10;
 					}
 					if(inputChars[currSelectedIndex][inputCharsLen[currSelectedIndex] - 2] == '.'){ // *.a -> *.a0
 						inputChars[currSelectedIndex][inputCharsLen[currSelectedIndex]] = '0';
 						inputCharsLen[currSelectedIndex] ++;
 						inputChars[currSelectedIndex][inputCharsLen[currSelectedIndex]] = 0xFFFF;
-						inputDistUM[currSelectedIndex] = inputDistUM[currSelectedIndex] * 10;
+						//inputDistUM[currSelectedIndex] = inputDistUM[currSelectedIndex] * 10;
 					}
 					if(inputChars[currSelectedIndex][inputCharsLen[currSelectedIndex] - 3] == '.'){ // *.ab -> *.ab0
 						inputChars[currSelectedIndex][inputCharsLen[currSelectedIndex]] = '0';
 						inputCharsLen[currSelectedIndex] ++;
 						inputChars[currSelectedIndex][inputCharsLen[currSelectedIndex]] = 0xFFFF;
-						inputDistUM[currSelectedIndex] = inputDistUM[currSelectedIndex] * 10;
+						//inputDistUM[currSelectedIndex] = inputDistUM[currSelectedIndex] * 10;
 					}
 				}
 				dotNumbToUnicode(index,inputDistUM[index]);
@@ -407,6 +442,11 @@ public:
 		void onTimer(){
 			//����Ƕ�
 			displayMainAxisDegree();		
+			if(editing){
+				currMainAxisInPulse[currSelectedIndex] = Setting::getMainAxisAngleInPulse();
+				displayFixedDigree(currSelectedIndex,currMainAxisInPulse[currSelectedIndex]);
+				displayFixedPulse(currSelectedIndex,inputDistUM[currSelectedIndex]);
+			}
 		}
 		void dotNumbToUnicode(int index,u32 numbInputted){
 			  u32 times = 1000000000;

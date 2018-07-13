@@ -47,5 +47,9 @@ public:
     static void setNeedPresetParameters(bool need);
     static u32  calcDegreePulse(u32 distMM);
     static s32  getPrecision();
+
+    static s32  calculateDelayedPulse(s32 baseDegreeInPulse,s32 baseDist,s32 measureDegreeInPulses,s32 measureDist);
+		
+		static s32  calcDistToZero(u32 distMM,s32 currAxisPulses);
 };
 #endif
