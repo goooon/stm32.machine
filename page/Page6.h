@@ -15,8 +15,6 @@ public:
 			
 			 display(roundPerMin,angle);
 			 ext::Led::SetLed(ext::Led::ProcessingLed,false);
-			
-			 
 		}
 		virtual void leave(){
 			
@@ -136,6 +134,7 @@ public:
 			  code[i++] = 0x51b2;
 			  code[i++] = 0xffff;
 			  lcd::displayUnicode(0x660,code,i);
+				
 			  //HeJiXiuZheng
 				totalDist = combinedFixDist + whellDist;
 				if(totalDist < 0)totalDist += Setting::getDistUMCountPerTooth();
@@ -153,13 +152,12 @@ public:
 			  code[i++] = 0x51b2;
 			  code[i++] = 0xffff;
 			  lcd::displayUnicode(0x6a0,code,i);
-				//״̬
 				displayState();
 		}
 		void displayState(){
 			short code[20];
 			int i = 0;
-			if(state == 0){//δ��ʼ�ӹ�
+			if(state == 0){//
 					code[0] = 0x672a;
 					code[1] = 0x5f00;
 					code[2] = 0x59cb;
@@ -168,7 +166,7 @@ public:
 					code[5] = 0xffff;
 					i = 6;
 				}
-				else if(state == 1){//���ڼӹ�..
+				else if(state == 1){//
 					code[0] = 0x6b63;
 					code[1] = 0x5728;
 					code[2] = 0x52a0;
@@ -179,7 +177,7 @@ public:
 					code[7] = 0xffff;
 					i = 8;
 				}
-				else{//�ӹ�����
+				else{//
 					code[0] = 0x52a0;
 					code[1] = 0x5de5;
 					code[2] = 0x7ed3;
@@ -235,8 +233,8 @@ public:
 						displayState();
 						FPGA_SET_DELAYED_PULSE(0);
 					  FPGA_RESET();
-					  Setting::setWhellFixPulse(0,0);
-						lcd::jumpToPage(5);
+					  //Setting::setWhellFixPulse(0,0);
+						//lcd::jumpToPage(5);
 						FPGA_CONFIG();
 					  LOG_I("reset fpga 0x%x",total);
 						return ext::None;
