@@ -11,9 +11,10 @@ public:
 		virtual void enter(){
 			 u32 roundPerMin = Setting::getRoundPerMin();
 			 u32 angle = Setting::getMainAxisAngleInPulse();
-			 //state = 0;
-			 display(roundPerMin,angle);
-			 //ext::Led::SetLed(ext::Led::ProcessingLed,false);
+
+			 updateState(1);
+			
+			 updateDataAndUI(roundPerMin,angle);
 			 updateFpgaData();
 		}
 		virtual void leave(){
@@ -21,7 +22,7 @@ public:
 			ext::Led::SetLed(ext::Led::WheelFixLed,false);
 			ext::Led::SetLed(ext::Led::TranspantLed,true);
 		}
-		void display(u32 r,u32 curAngle){
+		void updateDataAndUI(u32 r,u32 curAngle){
 			  short code[20];
 			  s32 defaultInputDist;
 			  s32 defaultMainAxisInPulse;
@@ -81,8 +82,10 @@ public:
 				code[5] = 0x6746;
 				code[6] = 0xffff;
 				lcd::displayUnicode(0x6D0,code,7);
+				
 			  //CeLiangXiuZheng
-				defaultInputDist = Setting::getBaseConfigInput(Setting::getDefaultBaseConfigInputIndex(),defaultMainAxisInPulse);
+				//defaultInputDist = Setting::getBaseConfigInput(Setting::getDefaultBaseConfigInputIndex(),defaultMainAxisInPulse);
+				Setting::getDefautMeasureFixPulse(defaultInputDist,defaultMainAxisInPulse);
 			  Setting::getMeasureFixPulse(measureDist,measurePuls);
 
 				combinedFixPulse = Setting::calculateDelayedPulse(defaultMainAxisInPulse,defaultInputDist,measurePuls,measureDist);
@@ -125,22 +128,23 @@ public:
 			  code[i++] = 'm';
 			  code[i++] = 0xffff;
 			  lcd::displayUnicode(0x690,code,i);
+				
 				total = combinedFixPulse + whellPulse;
 				total %= Setting::getPulseCountPerCircle();
 				total += Setting::getPulseCountPerCircle();
 				total %= Setting::getPulseCountPerCircle();
-					
 				i = tool::convertFixed(total,0,code,20);
 			  i--;
 			  code[i++] = 0x8109;
 			  code[i++] = 0x51b2;
 			  code[i++] = 0xffff;
 			  lcd::displayUnicode(0x6a0,code,i);
-				displayState();
+				updateState(state);
 		}
-		void displayState(){
+		void updateState(u8 nextState){
 			short code[20];
 			int i = 0;
+			state = nextState;
 			if(state == 0){//
 					code[0] = 0x672a;
 					code[1] = 0x5f00;
@@ -172,8 +176,6 @@ public:
 				lcd::displayUnicode(0x6E0,code,i);
 		}
 		void updateFpgaData(){
-			state = 1;
-			displayState();
 			FPGA_SET_DELAYED_PULSE(total);
 			FPGA_START_WORKING();
 			ext::Led::SetLed(ext::Led::ProcessingLed,true);
@@ -196,7 +198,7 @@ public:
 						break;
 					case ext::CMD_KnifeFix:
 						if(state == 1){
-							return ext::None;
+							//return ext::None;
 						}
 						FPGA_RESET();
 						lcd::jumpToPage(11);
@@ -211,14 +213,16 @@ public:
 						return ext::None;
 						break;
 					case ext::CMD_Start:
-						/*state = 1;
-					  displayState();
+						/*
+					  updateState(1);
 					  ext::Led::SetLed(ext::Led::ProcessingLed,true);
 						ext::Led::SetLed(ext::Led::TranspantLed,false);
 						FPGA_CONFIG();
 						FPGA_SET_DELAYED_PULSE(total);
 					  FPGA_START_WORKING();
 					  LOG_I("start working 0x%x",total);*/
+					  
+			      updateState(1);
 					  updateFpgaData();
 						return ext::None;
 						break;
@@ -226,7 +230,7 @@ public:
 						/*state = 2;
 					  ext::Led::SetLed(ext::Led::ProcessingLed,false);
 					  ext::Led::SetLed(ext::Led::TranspantLed,true);
-						displayState();
+						updateState(2);
 						FPGA_SET_DELAYED_PULSE(0);
 					  FPGA_RESET();*/
 					  Setting::setWhellFixPulse(0,0);
@@ -235,51 +239,6 @@ public:
 						FPGA_RESET();
 					  LOG_I("reset fpga 0x%x",total);
 						return ext::None;
-					// below is to debut fpga
-					// case ext::Numb_0:
-					// 		data = ext::Fpga::Read(0);
-					// 	  LOG_I("read 0x%x",data);
-					// 	  break;
-					// 	 case ext::Numb_1:
-					// 		data = ext::Fpga::Read(1);
-					// 	  LOG_I("read 0x%x",data);
-					// 	  break;
-					// 	 case ext::Numb_2:
-					// 	  ext::Fpga::Write(2,total);
-					// 	  LOG_I("addr 2 write:0x%x",(u8)total);
-					// 	  break;
-					// 	 case ext::Numb_3:
-					// 		ext::Fpga::Write(3,total>>8);
-					// 	  LOG_I("addr 3 write:0x%x",total>>8);
-					// 	  break;
-					// 	 case ext::Numb_4:
-					// 		data = ext::Fpga::Read(2);
-					// 	  LOG_I("read from addr 2: 0x%x",data);
-					// 	  break;
-					// 	 case ext::Numb_5:
-					// 		data = ext::Fpga::Read(3);
-					// 	  LOG_I("read from addr 3: 0x%x",data);
-					// 	  break;
-					// 	 case ext::Numb_6:
-					// 		ext::Fpga::Write(15,0);
-					// 	  LOG_I("addr 15 write:0");
-					// 	  break;
-					// 	 case ext::Numb_7:
-					// 		ext::Fpga::Write(15,1);
-					// 	  LOG_I("addr 15 write:1");
-					// 	  break;
-					// 	 case ext::Numb_8:
-					// 		ext::Fpga::Write(15,2);
-					// 	  LOG_I("addr 15 write:2");
-					// 	  break;
-					// 	 case ext::Numb_9:
-					// 		data = ext::Fpga::Read(15);
-					// 	  LOG_I("read from addr 0xf: 0x%x",data);
-					// 	  break;
-					// 	 case ext::Numb_Dot:
-					// 		ext::Fpga::Write(2,total);
-					// 	  ext::Fpga::Write(3,total>>8);
-					// 	break;
 				}
 			return cmd;
 		}
@@ -291,8 +250,7 @@ public:
 		void onTimer(){
 			 u32 roundPerMin = Setting::getRoundPerMin();
 			 u32 angle = Setting::getMainAxisAngleInPulse();
-			 display(roundPerMin,angle);
-			 //LOG_I("Timer2 Trigger: axis pulse %d",angle);
+			 updateDataAndUI(roundPerMin,angle);
 		}
 	private:
 	  s32 total;

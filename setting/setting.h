@@ -29,6 +29,7 @@ public:
     static void setDefaultBaseConfigInputIndex(u32 defautIndex);
     static u32  getDefaultBaseConfigInputIndex();
     static u32  getBaseConfigInput(u32 i,s32& curDegree);
+    static bool getDefautMeasureFixPulse(s32& distUM,s32& curDegree);
 
     static void setConfigToothType(ToothType ypte);
     static ToothType  getConfigToothType();

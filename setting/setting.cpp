@@ -80,8 +80,8 @@ void Setting::setMeasureFixPulse(u32 dist,u32 count){
 	 g_MeasureFixDist = dist;
 }
 void  Setting::getMeasureFixPulse(u32& dist,u32& count){
-	 count = g_MeasureFixPulse;
 	 dist = g_MeasureFixDist;
+	 count = g_MeasureFixPulse;
 }
 void Setting::setWhellFixPulse(s32 dist,s32 count){
 	 g_whellFixPulse = count;
@@ -134,6 +134,16 @@ u32  Setting::getBaseConfigInput(u32 i,s32& curDegree){
 	 }
 	 curDegree = config.currMainAxisInPulse[i];
 	 return config.input[i];
+}
+bool Setting::getDefautMeasureFixPulse(s32& distUM,s32& curDegree){
+	 u32 i = config.defaultBaseInput;
+	 if(i > 3){
+		  LOG_E("wrong config.defaultBaseInput(%d)\r\n",i);
+		  return false;
+	 }
+	 curDegree = config.currMainAxisInPulse[i];
+	 distUM = config.input[i];
+	 return true;
 }
 void Setting::setInput(u32 i,u32 u){
 	if(i > 3){
@@ -188,7 +198,7 @@ s32 Setting::getRoundPerMin(){
 	 return g_RoundPerMinute;
 }
 void Setting::updateRoundPerMin(u32 ticks,u16 pulseIn4096){
-	    #define COUNT_PER_SECOUND  50  //0.02s per call for Timer7
+	  #define COUNT_PER_SECOUND  50  //0.02s per call for Timer7
 		#define SECOUND_PER_MINUTE 60
 		#define PULSE_COUNT_PER_MINUTE(dltPulse) (dltPulse * COUNT_PER_SECOUND * SECOUND_PER_MINUTE)
 		axisDegreeQueue[0] = axisDegreeQueue[1];
