@@ -12,9 +12,9 @@ public:
 			 u32 roundPerMin = Setting::getRoundPerMin();
 			 u32 angle = Setting::getMainAxisAngleInPulse();
 			 //state = 0;
-			 //display(roundPerMin,angle);
+			 display(roundPerMin,angle);
 			 //ext::Led::SetLed(ext::Led::ProcessingLed,false);
-			updateFpgaData();
+			 updateFpgaData();
 		}
 		virtual void leave(){
 			ext::Led::SetLed(ext::Led::ProcessingLed,false);
@@ -84,28 +84,7 @@ public:
 			  //CeLiangXiuZheng
 				defaultInputDist = Setting::getBaseConfigInput(Setting::getDefaultBaseConfigInputIndex(),defaultMainAxisInPulse);
 			  Setting::getMeasureFixPulse(measureDist,measurePuls);
-				/*s32 p1 = Setting::getPulseCountPerCircle() - (measurePuls + Setting::getPulseCountPerCircle() - defaultMainAxisInPulse);
-				s32 p2 = Setting::distUMToPulse(measureDist + Setting::getDistUMCountPerTooth() - defaultInputDist);
-				combinedFixPulse =  (p1 + p2) % Setting::getPulseCountPerCircle();
-				
-				s32 Db = defaultInputDist;//基准的距离数字
-				s32 Ab0 = defaultMainAxisInPulse * Setting::getDistUMCountPerTooth() /Setting::getPulseCountPerCircle();//基准的角度脉冲*6350/1024
-				
-				s32 Dm = measureDist;//测量的距离数字
-				s32 Am0 = measurePuls * Setting::getDistUMCountPerTooth() / Setting::getPulseCountPerCircle();//测量的角度脉冲*6350/1024
-				
-				s32 Fix_b = Ab0 + ((s32)1000000 - Db);//基准的计算到零角度距离
-				s32 Fix_m = Am0 + ((s32)1000000 - Dm);//测量的计算到零角度距离
-				
-				s32 Fix = Fix_m - Fix_b;//基准的和测量的零度距离差
-				
-				Fix %= (s32)Setting::getDistUMCountPerTooth();//6350取余
-				Fix += (s32)Setting::getDistUMCountPerTooth();//自加一个6350
-				Fix %= (s32)Setting::getDistUMCountPerTooth();//6350取余
-				
-				//combinedFixDist = measureDist - defaultInputDist;
-				//combinedFixDist = Setting::pulseToDistUM(combinedFixPulse);
-				combinedFixPulse = Fix  * Setting::getPulseCountPerCircle() / Setting::getDistUMCountPerTooth();*/
+
 				combinedFixPulse = Setting::calculateDelayedPulse(defaultMainAxisInPulse,defaultInputDist,measurePuls,measureDist);
 			  combinedFixDist = Setting::pulseToDistUM(combinedFixPulse);
 				i = tool::convertFixed(combinedFixDist,Setting::getPrecision(),code,20);
@@ -148,6 +127,9 @@ public:
 			  lcd::displayUnicode(0x690,code,i);
 				total = combinedFixPulse + whellPulse;
 				total %= Setting::getPulseCountPerCircle();
+				total += Setting::getPulseCountPerCircle();
+				total %= Setting::getPulseCountPerCircle();
+					
 				i = tool::convertFixed(total,0,code,20);
 			  i--;
 			  code[i++] = 0x8109;
