@@ -180,6 +180,7 @@ ext::ExeCommand preCmd;
 		 else{
 			 ext::ExeCommand cmd = ext::Keyboard::Scan();
 			 if(cmd != ext::None){
+				 lcd::beep(50);
 				 if(preCmd != cmd){
 						LOG_I("cmd %c[0x%x/%d]",cmd,cmd,cmd);
 						page->handleKeyPressed(cmd);

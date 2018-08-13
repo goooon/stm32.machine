@@ -11,13 +11,15 @@ public:
 		virtual void enter(){
 			 u32 roundPerMin = Setting::getRoundPerMin();
 			 u32 angle = Setting::getMainAxisAngleInPulse();
-			 state = 0;
-			
-			 display(roundPerMin,angle);
-			 ext::Led::SetLed(ext::Led::ProcessingLed,false);
+			 //state = 0;
+			 //display(roundPerMin,angle);
+			 //ext::Led::SetLed(ext::Led::ProcessingLed,false);
+			updateFpgaData();
 		}
 		virtual void leave(){
-			
+			ext::Led::SetLed(ext::Led::ProcessingLed,false);
+			ext::Led::SetLed(ext::Led::WheelFixLed,false);
+			ext::Led::SetLed(ext::Led::TranspantLed,true);
 		}
 		void display(u32 r,u32 curAngle){
 			  short code[20];
@@ -187,6 +189,15 @@ public:
 				}
 				lcd::displayUnicode(0x6E0,code,i);
 		}
+		void updateFpgaData(){
+			state = 1;
+			displayState();
+			FPGA_SET_DELAYED_PULSE(total);
+			FPGA_START_WORKING();
+			ext::Led::SetLed(ext::Led::ProcessingLed,true);
+			ext::Led::SetLed(ext::Led::TranspantLed,false);
+			LOG_I("start working 0x%x",total);
+		}
 		virtual ext::ExeCommand onKeyPressed(ext::ExeCommand cmd)
 		{
 			LOG_I("key pressed:%c/0x%x",cmd,cmd);
@@ -194,48 +205,52 @@ public:
 			switch(cmd){
 				  case ext::CMD_FanHui:
 						if(state == 1){
-							return ext::None;
+							//return ext::None;
 						}
+						FPGA_RESET();
 						Setting::setWhellFixPulse(0,0);
 						lcd::jumpToPage(5);
-						FPGA_CONFIG();
 						return ext::None;
 						break;
 					case ext::CMD_KnifeFix:
 						if(state == 1){
 							return ext::None;
 						}
+						FPGA_RESET();
 						lcd::jumpToPage(11);
 						return ext::None;
 						break;
 					case ext::CMD_WheelFix:
 						if(state == 1){
-							return ext::None;
+							//return ext::None;
 						}
+						FPGA_RESET();
 						lcd::jumpToPage(12);
 						return ext::None;
 						break;
 					case ext::CMD_Start:
-						state = 1;
+						/*state = 1;
 					  displayState();
 					  ext::Led::SetLed(ext::Led::ProcessingLed,true);
 						ext::Led::SetLed(ext::Led::TranspantLed,false);
 						FPGA_CONFIG();
 						FPGA_SET_DELAYED_PULSE(total);
 					  FPGA_START_WORKING();
-					  LOG_I("start working 0x%x",total);
+					  LOG_I("start working 0x%x",total);*/
+					  updateFpgaData();
 						return ext::None;
 						break;
 					case ext::CMD_Stop:
-						state = 2;
+						/*state = 2;
 					  ext::Led::SetLed(ext::Led::ProcessingLed,false);
 					  ext::Led::SetLed(ext::Led::TranspantLed,true);
 						displayState();
 						FPGA_SET_DELAYED_PULSE(0);
-					  FPGA_RESET();
-					  //Setting::setWhellFixPulse(0,0);
-						//lcd::jumpToPage(5);
-						FPGA_CONFIG();
+					  FPGA_RESET();*/
+					  Setting::setWhellFixPulse(0,0);
+					  ext::Led::SetLed(ext::Led::WheelFixLed,false);
+						lcd::jumpToPage(5);
+						FPGA_RESET();
 					  LOG_I("reset fpga 0x%x",total);
 						return ext::None;
 					// below is to debut fpga

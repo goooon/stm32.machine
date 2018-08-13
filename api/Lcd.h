@@ -18,5 +18,6 @@ namespace lcd
 		void sendAddrValueLong(short addr,unsigned long value);
 		void displayUnicode(short addr,short* buff,short len);
 	  void displayUnicodeQueue(short addr,short* buff,short len);
+	  void beep(u8 len);
 }
 #endif

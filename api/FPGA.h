@@ -23,9 +23,9 @@ namespace ext
 		 private:
 		};
 }
-#define FPGA_START_WORKING() ext::Fpga::Write(15,2)
-#define FPGA_RESET()  ext::Fpga::Write(15,3);ext::Fpga::Write(15,0)
-#define FPGA_CONFIG() ext::Fpga::Write(15,0)
+#define FPGA_START_WORKING() ext::Fpga::Write(15,2);ext::Led::SetLed(ext::Led::TranspantLed,false);
+#define FPGA_RESET()  ext::Fpga::Write(15,0);ext::Led::SetLed(ext::Led::TranspantLed,true)
+#define FPGA_CONFIG() ext::Fpga::Write(15,0);ext::Led::SetLed(ext::Led::TranspantLed,true);
 #define FPGA_SET_DELAYED_PULSE(count) ext::Fpga::Write(2,(u8)count);ext::Fpga::Write(3,(u8)(count >> 8))
 
 #endif //__STM32F10x_FPGA_H

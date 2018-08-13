@@ -45,7 +45,7 @@ namespace ext
 	 class Keyboard
 	 {
 		 public:
-			const static int INPinsE = GPIO_Pin_12 | GPIO_Pin_13 | GPIO_Pin_14 | GPIO_Pin_15;
+			  const static int INPinsE = GPIO_Pin_12 | GPIO_Pin_13 | GPIO_Pin_14 | GPIO_Pin_15;
 		   	const static int OutPinsE =GPIO_Pin_10 | GPIO_Pin_11;
 		   	const static int OutPinsG =GPIO_Pin_0 | GPIO_Pin_1;
 		   	const static int OutPinsF =GPIO_Pin_13 | GPIO_Pin_14 |GPIO_Pin_15;

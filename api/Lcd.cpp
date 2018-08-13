@@ -101,3 +101,14 @@ void lcd::displayUnicodeQueue(short addr,short* buff,short len){
 	}
 	UART2_SendBuffer((u8*)Unicode,totalLen + 3);
 }
+void lcd::beep(u8 len10ms){
+	//A5 5A 03 80 02 C8
+	Unicode[0] = 0xA5;
+	Unicode[1] = 0x5A;
+	Unicode[2] = 0x03;
+	Unicode[3] = 0x80;
+	Unicode[4] = 0x02;
+	Unicode[5] = len10ms;
+	UART2_SendBuffer((u8*)Unicode,6);
+	return;
+}

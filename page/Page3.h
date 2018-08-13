@@ -17,9 +17,8 @@ public:
 			dispToothCoverType();
 			u32 toothCount = Setting::getToothCount();
 			ext::Led::SetLed(ext::Led::TranspantLed,true);
-			ext::Led::SetLed(ext::Led::LED_1,false);
-	    ext::Led::SetLed(ext::Led::LED_2,false);
-	    ext::Led::SetLed(ext::Led::LED_3,false);
+			ext::Led::SetLed(ext::Led::ProcessingLed,false);
+	    ext::Led::SetLed(ext::Led::WheelFixLed,false);
 		}
 		void dispToothDist(){
 			short code[20];

@@ -36,7 +36,7 @@ I (..\hwlib\STM32F10x_FWLib\inc\stm32f10x_tim.h)(0x5B58A564)
 I (..\hwlib\STM32F10x_FWLib\inc\stm32f10x_usart.h)(0x5B58A564)
 I (..\hwlib\STM32F10x_FWLib\inc\misc.h)(0x5B58A564)
 F (..\user\system_stm32f10x.h)(0x5B58A564)()
-F (..\user\main.cpp)(0x5B5F3421)(--cpp -c --cpu Cortex-M3 -g -O0 --apcs=interwork -I..\sys -I..\hwlib\STM32F10x_FWLib\inc -I..\hwlib -I..\user -I C:\Keil\ARM\RV31\INC -I C:\Keil\ARM\CMSIS\Include -I C:\Keil\ARM\Inc\ST\STM32F10x -DSTM32F10X_HD -DUSE_STDPERIPH_DRIVER -o ".\output\main.o" --omf_browse ".\output\main.crf" --depend ".\output\main.d")
+F (..\user\main.cpp)(0x5B71222B)(--cpp -c --cpu Cortex-M3 -g -O0 --apcs=interwork -I..\sys -I..\hwlib\STM32F10x_FWLib\inc -I..\hwlib -I..\user -I C:\Keil\ARM\RV31\INC -I C:\Keil\ARM\CMSIS\Include -I C:\Keil\ARM\Inc\ST\STM32F10x -DSTM32F10X_HD -DUSE_STDPERIPH_DRIVER -o ".\output\main.o" --omf_browse ".\output\main.crf" --depend ".\output\main.d")
 I (..\user\../sys/delay.h)(0x5B58A58A)
 I (..\user\../sys/sys.h)(0x5B58A58A)
 I (..\user\stm32f10x.h)(0x5B58A564)
@@ -63,21 +63,21 @@ I (C:\Keil\ARM\ARMCC\bin\..\include\stddef.h)(0x50F96150)
 I (C:\Keil\ARM\ARMCC\bin\..\include\stdarg.h)(0x50F9614E)
 I (..\user\../api/Timer.h)(0x5B58A58A)
 I (..\user\../api/Event.h)(0x5B58A58A)
-I (..\user\../api/Keyboard.h)(0x5B58A58A)
+I (..\user\../api/Keyboard.h)(0x5B6DA2D9)
 I (..\user\../api/Led.h)(0x5B58A58A)
-I (..\user\../api/Fpga.h)(0x5B58A58A)
+I (..\user\../api/Fpga.h)(0x5B711D52)
 I (..\user\../page/page0.h)(0x5B58A58A)
 I (..\user\../page/./Page.h)(0x5B58A58A)
-I (..\user\../page/./../api/lcd.h)(0x5B58A58A)
+I (..\user\../page/./../api/lcd.h)(0x5B71212D)
 I (..\user\../page/page1.h)(0x5B58A58A)
 I (..\user\../page/page2.h)(0x5B58A58A)
 I (..\user\../page/../setting/Setting.h)(0x5B58A58A)
-I (..\user\../page/page3.h)(0x5B5F3088)
+I (..\user\../page/page3.h)(0x5B711BD8)
 I (..\user\../page/page4.h)(0x5B58A58A)
 I (..\user\../page/page5.h)(0x5B58A58A)
 I (..\user\../page/../api/Tool.h)(0x5B58A58A)
 I (..\user\../page/./InputPage.h)(0x5B58A58A)
-I (..\user\../page/page6.h)(0x5B58AB05)
+I (..\user\../page/page6.h)(0x5B711EE0)
 I (..\user\../page/page7.h)(0x5B58A58A)
 I (..\user\../page/page8.h)(0x5B58A58A)
 I (..\user\../page/page9.h)(0x5B58A58A)
@@ -525,7 +525,7 @@ I (C:\Keil\ARM\ARMCC\bin\..\include\stdarg.h)(0x50F9614E)
 I (..\api\Queue.h)(0x5B58A58A)
 F (..\api\Event.h)(0x5B58A58A)()
 F (..\api\Keyboard.cpp)(0x5B58A58A)(--cpp -c --cpu Cortex-M3 -g -O0 --apcs=interwork -I..\sys -I..\hwlib\STM32F10x_FWLib\inc -I..\hwlib -I..\user -I C:\Keil\ARM\RV31\INC -I C:\Keil\ARM\CMSIS\Include -I C:\Keil\ARM\Inc\ST\STM32F10x -DSTM32F10X_HD -DUSE_STDPERIPH_DRIVER -o ".\output\keyboard.o" --omf_browse ".\output\keyboard.crf" --depend ".\output\keyboard.d")
-I (..\api\Keyboard.h)(0x5B58A58A)
+I (..\api\Keyboard.h)(0x5B6DA2D9)
 I (..\user\stm32f10x.h)(0x5B58A564)
 I (C:\Keil\ARM\CMSIS\Include\core_cm3.h)(0x50875B7E)
 I (C:\Keil\ARM\ARMCC\bin\..\include\stdint.h)(0x50F96150)
@@ -549,8 +549,8 @@ I (..\api\../base/type.h)(0x5B58A58A)
 I (..\api\../sys/delay.h)(0x5B58A58A)
 I (..\api\../sys/sys.h)(0x5B58A58A)
 I (..\api\../sys/usart.h)(0x5B58A58A)
-F (..\api\Keyboard.h)(0x5B58A58A)()
-F (..\api\Lcd.cpp)(0x5B58A58A)(--cpp -c --cpu Cortex-M3 -g -O0 --apcs=interwork -I..\sys -I..\hwlib\STM32F10x_FWLib\inc -I..\hwlib -I..\user -I C:\Keil\ARM\RV31\INC -I C:\Keil\ARM\CMSIS\Include -I C:\Keil\ARM\Inc\ST\STM32F10x -DSTM32F10X_HD -DUSE_STDPERIPH_DRIVER -o ".\output\lcd.o" --omf_browse ".\output\lcd.crf" --depend ".\output\lcd.d")
+F (..\api\Keyboard.h)(0x5B6DA2D9)()
+F (..\api\Lcd.cpp)(0x5B7121FC)(--cpp -c --cpu Cortex-M3 -g -O0 --apcs=interwork -I..\sys -I..\hwlib\STM32F10x_FWLib\inc -I..\hwlib -I..\user -I C:\Keil\ARM\RV31\INC -I C:\Keil\ARM\CMSIS\Include -I C:\Keil\ARM\Inc\ST\STM32F10x -DSTM32F10X_HD -DUSE_STDPERIPH_DRIVER -o ".\output\lcd.o" --omf_browse ".\output\lcd.crf" --depend ".\output\lcd.d")
 I (..\api\./Tracer.h)(0x5B58A58A)
 I (C:\Keil\ARM\ARMCC\bin\..\include\stdio.h)(0x50F96150)
 I (C:\Keil\ARM\ARMCC\bin\..\include\string.h)(0x50F96150)
@@ -572,11 +572,11 @@ I (..\hwlib\STM32F10x_FWLib\inc\stm32f10x_tim.h)(0x5B58A564)
 I (..\hwlib\STM32F10x_FWLib\inc\stm32f10x_usart.h)(0x5B58A564)
 I (..\hwlib\STM32F10x_FWLib\inc\misc.h)(0x5B58A564)
 I (..\api\./Event.h)(0x5B58A58A)
-I (..\api\./lcd.h)(0x5B58A58A)
+I (..\api\./lcd.h)(0x5B71212D)
 I (..\api\./../sys/delay.h)(0x5B58A58A)
 I (..\api\./../sys/sys.h)(0x5B58A58A)
 I (..\api\./../sys/usart.h)(0x5B58A58A)
-F (..\api\Lcd.h)(0x5B58A58A)()
+F (..\api\Lcd.h)(0x5B71212D)()
 F (..\api\Queue.h)(0x5B58A58A)()
 F (..\api\Timer.h)(0x5B58A58A)()
 F (..\api\Tracer.cpp)(0x5B58A58A)(--cpp -c --cpu Cortex-M3 -g -O0 --apcs=interwork -I..\sys -I..\hwlib\STM32F10x_FWLib\inc -I..\hwlib -I..\user -I C:\Keil\ARM\RV31\INC -I C:\Keil\ARM\CMSIS\Include -I C:\Keil\ARM\Inc\ST\STM32F10x -DSTM32F10X_HD -DUSE_STDPERIPH_DRIVER -o ".\output\tracer.o" --omf_browse ".\output\tracer.crf" --depend ".\output\tracer.d")
@@ -703,14 +703,14 @@ I (..\hwlib\STM32F10x_FWLib\inc\stm32f10x_rcc.h)(0x5B58A564)
 I (..\hwlib\STM32F10x_FWLib\inc\stm32f10x_tim.h)(0x5B58A564)
 I (..\hwlib\STM32F10x_FWLib\inc\stm32f10x_usart.h)(0x5B58A564)
 I (..\hwlib\STM32F10x_FWLib\inc\misc.h)(0x5B58A564)
-I (..\api\Fpga.h)(0x5B58A58A)
+I (..\api\Fpga.h)(0x5B711D52)
 I (..\api\Tracer.h)(0x5B58A58A)
 I (C:\Keil\ARM\ARMCC\bin\..\include\stdio.h)(0x50F96150)
 I (C:\Keil\ARM\ARMCC\bin\..\include\string.h)(0x50F96150)
 I (C:\Keil\ARM\ARMCC\bin\..\include\stddef.h)(0x50F96150)
 I (C:\Keil\ARM\ARMCC\bin\..\include\stdarg.h)(0x50F9614E)
 I (..\api\../base/type.h)(0x5B58A58A)
-F (..\api\Led.cpp)(0x5B58A58A)(--cpp -c --cpu Cortex-M3 -g -O0 --apcs=interwork -I..\sys -I..\hwlib\STM32F10x_FWLib\inc -I..\hwlib -I..\user -I C:\Keil\ARM\RV31\INC -I C:\Keil\ARM\CMSIS\Include -I C:\Keil\ARM\Inc\ST\STM32F10x -DSTM32F10X_HD -DUSE_STDPERIPH_DRIVER -o ".\output\led.o" --omf_browse ".\output\led.crf" --depend ".\output\led.d")
+F (..\api\Led.cpp)(0x5B711A1A)(--cpp -c --cpu Cortex-M3 -g -O0 --apcs=interwork -I..\sys -I..\hwlib\STM32F10x_FWLib\inc -I..\hwlib -I..\user -I C:\Keil\ARM\RV31\INC -I C:\Keil\ARM\CMSIS\Include -I C:\Keil\ARM\Inc\ST\STM32F10x -DSTM32F10X_HD -DUSE_STDPERIPH_DRIVER -o ".\output\led.o" --omf_browse ".\output\led.crf" --depend ".\output\led.d")
 I (..\api\Led.h)(0x5B58A58A)
 I (..\user\stm32f10x.h)(0x5B58A564)
 I (C:\Keil\ARM\CMSIS\Include\core_cm3.h)(0x50875B7E)
@@ -732,15 +732,16 @@ I (C:\Keil\ARM\ARMCC\bin\..\include\string.h)(0x50F96150)
 I (C:\Keil\ARM\ARMCC\bin\..\include\stddef.h)(0x50F96150)
 I (C:\Keil\ARM\ARMCC\bin\..\include\stdarg.h)(0x50F9614E)
 I (..\api\../base/type.h)(0x5B58A58A)
-F (..\api\FPGA.h)(0x5B58A58A)()
+F (..\api\FPGA.h)(0x5B711D52)()
+F (..\api\Led.h)(0x5B58A58A)()
 F (..\page\Page0.h)(0x5B58A58A)()
 F (..\page\Page1.h)(0x5B58A58A)()
 F (..\page\Page2.h)(0x5B58A58A)()
-F (..\page\Page3.h)(0x5B5F3088)()
+F (..\page\Page3.h)(0x5B711BD8)()
 F (..\page\Page4.h)(0x5B58A58A)()
 F (..\page\Page5.h)(0x5B58A58A)()
 F (..\page\page.h)(0x5B58A58A)()
-F (..\page\Page6.h)(0x5B58AB05)()
+F (..\page\Page6.h)(0x5B711EE0)()
 F (..\page\Page7.h)(0x5B58A58A)()
 F (..\page\Page8.h)(0x5B58A58A)()
 F (..\page\Page9.h)(0x5B58A58A)()
@@ -751,7 +752,7 @@ F (..\page\新建文本文档.txt)(0x5B58A564)()
 F (..\page\InputPage.h)(0x5B58A58A)()
 F (..\setting\setting.cpp)(0x5B58A58A)(--cpp -c --cpu Cortex-M3 -g -O0 --apcs=interwork -I..\sys -I..\hwlib\STM32F10x_FWLib\inc -I..\hwlib -I..\user -I C:\Keil\ARM\RV31\INC -I C:\Keil\ARM\CMSIS\Include -I C:\Keil\ARM\Inc\ST\STM32F10x -DSTM32F10X_HD -DUSE_STDPERIPH_DRIVER -o ".\output\setting.o" --omf_browse ".\output\setting.crf" --depend ".\output\setting.d")
 I (..\setting\./Setting.h)(0x5B58A58A)
-I (..\setting\./../api/lcd.h)(0x5B58A58A)
+I (..\setting\./../api/lcd.h)(0x5B71212D)
 I (..\setting\./../api/../sys/delay.h)(0x5B58A58A)
 I (..\setting\./../api/../sys/sys.h)(0x5B58A58A)
 I (..\user\stm32f10x.h)(0x5B58A564)

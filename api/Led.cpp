@@ -16,7 +16,7 @@ bool Led::Init(){
 }
 
 void Led::SetLed(int LED_Index,bool onOff){
-	   if(onOff){
+	   if(!onOff){
 			 GPIO_SetBits(GPIOD,LED_Index);
 		 }
 		 else{
