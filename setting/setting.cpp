@@ -242,7 +242,7 @@ s32 Setting::calcDistToZero(u32 distMM,s32 currAxisPulses)
 	s32 roundPulse = Setting::getPulseCountPerCircle();
 	s32 distPerTooth = getDistUMCountPerTooth();
 	s32 axisDist = pulseToDistUM(currAxisPulses);
-	s32 result = ((s32)(axisDist + distMM)) % distPerTooth;
+	s32 result = ((s32)(axisDist - distMM)) % distPerTooth;
 	return result;
 }
 int original_method(
