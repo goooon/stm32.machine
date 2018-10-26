@@ -4,6 +4,8 @@
 #include "../api/lcd.h"
 #include "../setting/Setting.h"
 #include "InputPage.h"
+
+//设置基本校准参数的页面
 class Page10 : public InputPage
 {
 public:
@@ -24,6 +26,7 @@ public:
 		  mainAxixDegreeAddr = 0x1000;
 			InputPage::enter();
 	}
+
 	virtual ext::ExeCommand onKeyPressed(ext::ExeCommand cmd)
 	{
 		  LOG_I("key pressed:%c",cmd);

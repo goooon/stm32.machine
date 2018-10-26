@@ -1,0 +1,37 @@
+
+T04A8 002:140 SEGGER J-Link V4.35b (beta) Log File (0002ms, 2140ms total)
+T04A8 002:140 DLL Compiled: Sep  2 2011 18:34:46 (0002ms, 2140ms total)
+T04A8 002:140 Logging started @ 2018-10-26 11:09 (0002ms, 2140ms total)
+T04A8 002:142 JLINK_SetWarnOutHandler(...) (0000ms, 2142ms total)
+T04A8 002:142 JLINK_OpenEx(...)
+Firmware: J-Link ARM V8 compiled May 27 2009 17:31:22
+Hardware: V8.00
+S/N: 799713843
+Feature(s): RDI,FlashDL,FlashBP,JFlash,GDBFULL  returns O.K. (1409ms, 2142ms total)
+T04A8 003:551 JLINK_SetErrorOutHandler(...) (0000ms, 3551ms total)
+T04A8 003:551 JLINK_ExecCommand("Device = STM32F103ZE", ...)
+                JLINK_ExecCommand("map ram 0x20000000 - 0x2000FFFF", ...)  returns 0x00 (0000ms, 0000ms total)
+                JLINK_AddMirrorAreaEx(Addr = 0x00000000, Size = 0x00000000) (0000ms, 0000ms total)
+              Device "STM32F103ZE" selected (512 KB flash, 64 KB RAM).  returns 0x00 (0001ms, 3551ms total)
+T04A8 003:553 JLINK_ExecCommand("ProjectFile = "E:\MyWorkFile\STM32\ShuKongJIChang\prj\JLinkSettings.ini"", ...)  returns 0x00 (0001ms, 3552ms total)
+T04A8 003:554 JLINK_ExecCommand("DisableConnectionTimeout", ...)  returns 0x00 (0000ms, 3553ms total)
+T04A8 003:555 JLINK_TIF_Select(JLINKARM_TIF_JTAG)  returns 0x00 (0000ms, 3553ms total)
+T04A8 003:555 JLINK_SetSpeed(2000) (0001ms, 3553ms total)
+T04A8 003:556 JLINK_GetHardwareVersion()  returns 0x13880 (0000ms, 3554ms total)
+T04A8 003:556 JLINK_GetDLLVersion()  returns 43502 (0000ms, 3554ms total)
+T04A8 003:556 JLINK_GetFirmwareString(...) (0000ms, 3554ms total)
+T04A8 003:556 JLINK_GetDLLVersion()  returns 43502 (0000ms, 3554ms total)
+T04A8 003:556 JLINK_GetCompileDateTime() (0000ms, 3554ms total)
+T04A8 003:556 JLINK_GetFirmwareString(...) (0000ms, 3554ms total)
+T04A8 003:556 JLINK_GetHardwareVersion()  returns 0x13880 (0000ms, 3554ms total)
+T04A8 003:556 JLINK_SetResetType(JLINKARM_RESET_TYPE_NORMAL)  returns JLINKARM_RESET_TYPE_NORMAL (0000ms, 3554ms total)
+T04A8 003:556 JLINK_Reset() >0x2F8 JTAG>TotalIRLen = 9, IRPrint = 0x0011 >0x30 JTAG> >0x210 JTAG> >0x80 JTAG> >0x40 JTAG> >0x40 JTAG> >0x50 JTAG> >0x40 JTAG> >0x40 JTAG> >0x40 JTAG> >0x50 JTAG> >0x40 JTAG> >0x50 JTAG> >0x40 JTAG> >0x40 JTAG> >0x40 JTAG> >0x30 JTAG> >0x40 JTAG> >0x50 JTAG> >0x40 JTAG> >0x38 JTAG> >0x80 JTAG> >0x40 JTAG> >0x40 JTAG> >0x50 JTAG> >0x40 JTAG> >0x40 JTAG> >0x40 JTAG> >0x50 JTAG> >0x40 JTAG> >0x40 JTAG> >0x30 JTAG> >0x40 JTAG> >0x40 JTAG> >0x40 JTAG> >0x40 JTAG> >0x40 JTAG>
+ >0x50 JTAG> >0x40 JTAG> >0x80 JTAG> >0x40 JTAG> >0x30 JTAG> >0x40 JTAG> >0x40 JTAG> >0x40 JTAG> >0x40 JTAG> >0x40 JTAG> >0x50 JTAG> >0x40 JTAG> >0x80 JTAG> >0x40 JTAG> >0x30 JTAG> >0x40 JTAG> >0x50 JTAG> >0x40 JTAG> >0x40 JTAG> >0x40 JTAG> >0x30 JTAG> >0x40 JTAG> >0x50 JTAG> >0x40 JTAG>Found Cortex-M3 r1p1, Little endian. >0x50 JTAG> >0x50 JTAG> >0x40 JTAG> >0x40 JTAG> >0x30 JTAG> >0x30 JTAG> >0x50 JTAG> >0x40 JTAG> >0x80 JTAG> >0x40 JTAG> >0x30 JTAG> >0x40 JTAG> >0x50 JTAG> >0x40 JTAG> >0x40 JTAG>
+ >0x40 JTAG> >0x30 JTAG> >0x30 JTAG> >0x50 JTAG> >0x40 JTAG> >0x80 JTAG> >0x40 JTAG> >0x30 JTAG> >0x40 JTAG> >0x50 JTAG> >0x40 JTAG>TPIU fitted. >0x40 JTAG> >0x40 JTAG> >0x30 JTAG> >0x40 JTAG> >0x50 JTAG> >0x40 JTAG>ETM fitted. >0x40 JTAG> >0x40 JTAG> >0x30 JTAG> >0x40 JTAG> >0x50 JTAG> >0x40 JTAG> >0x40 JTAG> >0x40 JTAG> >0x30 JTAG> >0x40 JTAG> >0x50 JTAG> >0x40 JTAG>  FPUnit: 6 code (BP) slots and 2 literal slots >0x40 JTAG> >0x40 JTAG> >0x30 JTAG> >0x40 JTAG> >0x50 JTAG> >0x40 JTAG> -- CPU is running
+ >0x200 JTAG> -- CPU is running >0x1F0 JTAG> -- CPU is running >0x230 JTAG> -- CPU is running >0x1F0 JTAG> -- CPU is running >0x1F0 JTAG> -- CPU is running >0x1F0 JTAG> -- CPU is running >0x1F0 JTAG> -- CPU is running >0x1F0 JTAG> >0x198 JTAG> >0x17A8 JTAG> >0x40 JTAG> >0x40 JTAG> >0x30 JTAG> >0x40 JTAG> >0x50 JTAG> >0x40 JTAG> >0x1F0 JTAG> >0x1F0 JTAG> >0x1F0 JTAG> >0x1F0 JTAG> >0x1F0 JTAG> (1090ms, 3554ms total)
+T04A8 004:647 JLINK_GetIdData(...) ScanLen=9 NumDevices=2 aId[0]=0x3BA00477 aIrRead[0]=0 aScanLen[0]=0 aScanRead[0]=0 (0001ms, 4644ms total)
+T04A8 004:648 JLINK_JTAG_GetDeviceID(DeviceIndex = 0)  returns 0x3BA00477 (0000ms, 4645ms total)
+T04A8 004:648 JLINK_JTAG_GetDeviceInfo(DeviceIndex = 0)  returns 0x00 (0000ms, 4645ms total)
+T04A8 004:648 JLINK_JTAG_GetDeviceID(DeviceIndex = 1)  returns 0x6414041 (0000ms, 4645ms total)
+T04A8 004:648 JLINK_JTAG_GetDeviceInfo(DeviceIndex = 1)  returns 0x00 (0000ms, 4645ms total)
+T04A8 004:658 JLINK_GetFirmwareString(...) (0000ms, 4645ms total)

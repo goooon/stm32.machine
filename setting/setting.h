@@ -35,7 +35,7 @@ public:
     static ToothType  getConfigToothType();
     static void saveToFlash();
 		static signed long distUMToPulse(signed long distUm);
-    static signed long pulseToDistUM(signed long pulse);
+    static float pulseToDistUM(float pulse);
 
     //static void setRoundPerMin(s32 count);
     static s32  getRoundPerMin();
@@ -49,7 +49,7 @@ public:
     static u32  calcDegreePulse(u32 distMM);
     static s32  getPrecision();
 
-    static s32  calculateDelayedPulse(s32 baseDegreeInPulse,s32 baseDist,s32 measureDegreeInPulses,s32 measureDist);
+    static float  calculateDelayedPulse(s32 baseDegreeInPulse,s32 baseDist,s32 measureDegreeInPulses,s32 measureDist);
 		
 		static s32  calcDistToZero(u32 distMM,s32 currAxisPulses);
 };

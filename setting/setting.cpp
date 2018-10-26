@@ -1,5 +1,7 @@
 #include "./Setting.h"
 #include "../api/Tracer.h"
+#include <math.h>
+
 extern "C"
 {
 	#include "../api/i2c.h"
@@ -167,9 +169,9 @@ void Setting::setConfigToothType(ToothType male){
 ToothType Setting::getConfigToothType(){
 	return (ToothType)config.type;
 }
-signed long Setting::pulseToDistUM(signed long pulse){
+float Setting::pulseToDistUM(float pulse){
 	//signed long roundDist = getDistUMCountPerTooth() * Setting::getToothCount();
-	signed long dist = getDistUMCountPerTooth() * pulse  / (signed long)getPulseCountPerCircle();
+	float dist = getDistUMCountPerTooth() * pulse  / (float)getPulseCountPerCircle();
 	return dist;
 }
 signed long Setting::distUMToPulse(signed long distUm){
@@ -242,45 +244,66 @@ s32 Setting::calcDistToZero(u32 distMM,s32 currAxisPulses)
 	s32 roundPulse = Setting::getPulseCountPerCircle();
 	s32 distPerTooth = getDistUMCountPerTooth();
 	s32 axisDist = pulseToDistUM(currAxisPulses);
-	s32 result = ((s32)(axisDist - distMM)) % distPerTooth;
-	return result;
+	
+	s32 result = ((s32)(axisDist + distMM)) % distPerTooth;	 //axisDist角度，distMM输入距离，distPerTooth = 6350
+	LOG_E("显示结果角度(%d)\r\n",axisDist);
+	LOG_E("显示结果输入距离(%d)\r\n",distMM);
+	LOG_E("显示结果牙距(%d)\r\n",distPerTooth);
+	LOG_E("显示结果测量的0度距离(%d)\r\n",result);
+ 	return result;
 }
-int original_method(
-					int Angle,
-					int Distance,/*(int)Distance1*1000+Distance2*/
-					int Angle_Pulse,
-					int InPut_Number/*(int)InPut_NumberZ*1000+InPut_NumberS)*/
-					){
-//Angle角度脉冲数，Distance1距离整数，Distance2距离小数，Z1Z轴整数，Z2=Z轴小数
+float  original_method(int Angle,int Distance,int Angle_Pulse, int InPut_Number){//基准脉冲数//设置基准的测量距离//测量脉冲数//测量输入的距离					
 
 	int  Basic_DisanceAngle0;
 	int  The_DisanceAngle0;
 	int  Temp_Distance;
 	int  The_Distance;//放大1000倍的距离变量数
 	int  The_Angle0;//用这个变量来记录到机床零度的距离
-	int  Temp_Pulse;
-	int  Delay_Pulse;
+	float  Temp_Pulse;
+	float  Delay_Pulse;
 	//The_Distance=1000000-(Distance);//把数据换算成放大1000倍的距离数(（1000000-）表示将千分表数据换算成距离数据)
-	//////////////////////////////////////////////////////////////////////////下面把距离转换到零度位置去
-	Basic_DisanceAngle0 = (6.201171875*Angle) + (1000000-(Distance));//计算出了基准从测量距离到机床零度的数据	
+	//LOG_E("基准角度(%d)\r\n",Angle);
+	//////////////////////////////////////////////////////////////////////////获取测量的余数
+	Distance = Distance % 6350;
+	InPut_Number = InPut_Number % 6350;
+//	LOG_E("取余完成\r\n");
+	//LOG_E("基准距离(%d)\r\n",Distance);
+	//LOG_E("测量距离(%d)\r\n",InPut_Number);
 
-	The_DisanceAngle0 = Angle_Pulse*6.201171875+(1000000-(InPut_Number));//???????????????6.201171875+????????==?????λ???0???????(??1000000-??????????????????????????)
+	//////////////////////////////////////////////////////////////////////////下面把距离转换到零度位置去
+//	Basic_DisanceAngle0 = (6.201171875  *Angle) + (6350-(Distance));//计算出了基准从测量距离到机床零度的数据(存储在机床的基准距离)
+//	The_DisanceAngle0 = (6.201171875 * Angle_Pulse) + (6350-(InPut_Number));//现在机床的主轴角度脉冲*6.201171875 + 输入的距离值 
+
+	Basic_DisanceAngle0 = (6.201171875  * Angle) + Distance;//计算出了基准从测量距离到机床零度的数据(存储在机床的基准距离)
+	The_DisanceAngle0 = (6.201171875 * Angle_Pulse) + InPut_Number;//现在机床的主轴角度脉冲*6.201171875 + 输入的距离值
+	//LOG_E("基准换算0度距离(%d)\r\n",Basic_DisanceAngle0);
+	//LOG_E("测量换算0度距离(%d)\r\n",The_DisanceAngle0);
 	
-	if (Basic_DisanceAngle0>The_DisanceAngle0)//??????0???????????ο?0??????????????????????????????
+	
+	Temp_Distance = (Basic_DisanceAngle0 - The_DisanceAngle0) % 6350;//计算出基准预测量的距离差
+	if (Temp_Distance >= 0)//当机床存储的零度换算距离 大于 现阶段测量的零度距离
 	{
-		Temp_Distance=(Basic_DisanceAngle0-The_DisanceAngle0)%6350;//(????????)
-		Temp_Pulse=Temp_Distance/6.2011171875;//???????????????
-		Delay_Pulse=(1024-Temp_Pulse)%1024;//?????????????????????????
+		
+		Temp_Pulse = Temp_Distance / 6.2011171875;//通过距离差算出脉冲差
+		Delay_Pulse = (1024 - Temp_Pulse);
+//		Delay_Pulse = (1024 - Temp_Pulse) % 1024;//?????????????????????????
+		//LOG_E("测量出来基准大于测量\r\n");
 	}
 	else
 	{
-		Temp_Distance=(The_DisanceAngle0-Basic_DisanceAngle0)%6350;//(????????)
+//		Temp_Distance=(The_DisanceAngle0-Basic_DisanceAngle0)%6350;//(????????)
 		Temp_Pulse=Temp_Distance/6.2011171875;//???????????????
-		Delay_Pulse=(0+Temp_Pulse)%1024;//????????????????????????
+////		Delay_Pulse = (0 + Temp_Pulse) % 1024;//????????????????????????
+		Delay_Pulse = - Temp_Pulse;	 //取整
+		//LOG_E("测量出来基准小于测量\r\n");
 	}
+	//LOG_E("测量出来要修正的距离差(%d)\r\n",Temp_Distance);
+	//LOG_E("测量出来要修正的脉冲(%d)\r\n",Temp_Pulse);
+//	LOG_E("测量出来要修正的(%d)\r\n",Delay_Pulse);
+//	 return Delay_Pulse;
 	return Delay_Pulse;
 }
-int current_method( int Angle,
+float current_method( int Angle,
 					int Distance,
 					int Angle_Pulse,
 					int InPut_Number){
@@ -290,18 +313,20 @@ int current_method( int Angle,
 	 
 	 s32 measureDist = InPut_Number;
 	 s32 measurePuls = Angle_Pulse;
+
+#include <stm32f10x.h>
 	 //6000
-	 s32 Db = defaultInputDist;//基准的距离数字
-	 //3615
-	 s32 Ab0 = defaultMainAxisInPulse * Setting::getDistUMCountPerTooth() / Setting::getPulseCountPerCircle();//基准的角度脉冲*6350/1024
-				
+	 s32 JZ_Db = defaultInputDist;//基准的距离数字
+	 //3615		
+//	 s32 Ab0 = defaultMainAxisInPulse * Setting::getDistUMCountPerTooth() / Setting::getPulseCountPerCircle();//基准的角度脉冲*6350/1024
+	 s32 JZ_Ab0 = defaultMainAxisInPulse *  Setting::getDistUMCountPerTooth() / Setting::getPulseCountPerCircle();//基准的角度脉冲*6350/1024			
 	 //6960
-	 s32 Dm = measureDist;//测量的距离数字
+	 s32 CL_Dm = measureDist;//测量的距离数字 1.587
 	 //2666
-	  s32 Am0 = measurePuls * Setting::getDistUMCountPerTooth() / Setting::getPulseCountPerCircle();//测量的角度脉冲*6350/1024
-				
-	 s32 Fix_b = Ab0 - Db;//基准的计算到零角度距离
-	 s32 Fix_m = Am0 - Dm;//测量的计算到零角度距离
+//	  s32 Am0 = measurePuls * Setting::getDistUMCountPerTooth() / Setting::getPulseCountPerCircle();//测量的角度脉冲*6350/1024
+	 s32 CL_Am0 = measurePuls *  Setting::getDistUMCountPerTooth() / Setting::getPulseCountPerCircle();//测量的角度脉冲 = 768*6.201171875	= 4.7625		
+	 s32 Fix_b = JZ_Ab0 + JZ_Db;//基准的计算到零角度距离
+	 s32 Fix_m = CL_Am0 + CL_Dm;//测量的计算到零角度距离
 				
 	 s32 Fix = Fix_m - Fix_b;//基准的和测量的零度距离差
 				
@@ -313,8 +338,8 @@ int current_method( int Angle,
 	 return Fix_Pulse;
 }
 
-s32  Setting::calculateDelayedPulse(s32 baseDegreeInPulse,s32 baseDist,s32 measureDegreeInPulses,s32 measureDist){
-	//s32 ret = original_method(baseDegreeInPulse,baseDist,measureDegreeInPulses,measureDist);
-	s32 ret = current_method(baseDegreeInPulse,baseDist,measureDegreeInPulses,measureDist);
+float  Setting::calculateDelayedPulse(s32 baseDegreeInPulse,s32 baseDist,s32 measureDegreeInPulses,s32 measureDist){
+	float ret = original_method(baseDegreeInPulse,baseDist,measureDegreeInPulses,measureDist);
+	//s32 ret = current_method(baseDegreeInPulse,baseDist,measureDegreeInPulses,measureDist);
 	return ret;
 }

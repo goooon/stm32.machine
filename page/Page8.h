@@ -2,6 +2,8 @@
 #define ZLG_PAGE8_HH
 #include "./Page.h"
 #include "../api/lcd.h"
+
+//∂‘µ∂ΩÁ√Ê
 class Page8 : public Page
 {
 public:

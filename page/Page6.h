@@ -22,15 +22,15 @@ public:
 			ext::Led::SetLed(ext::Led::WheelFixLed,false);
 			ext::Led::SetLed(ext::Led::TranspantLed,true);
 		}
-		void updateDataAndUI(u32 r,u32 curAngle){
+		void updateDataAndUI(u32 r,u32 curAngle){	//新加的2018-8-28 老古
 			  short code[20];
 			  s32 defaultInputDist;
 			  s32 defaultMainAxisInPulse;
 			  u32 measureDist,measurePuls;
 			  s32 whellDist,whellPulse;
 			  s32 totalDist;
-			  s32 combinedFixDist;
-			  s32 combinedFixPulse;
+			  float combinedFixDist;
+			  float combinedFixPulse;
 			  Setting::getWhellFixPulse(whellDist,whellPulse);
 			  //JiChuangZhuanSu
 			  int i = tool::convertFixed(r,0,code,20,false);

@@ -2,26 +2,49 @@
 #include "./Event.h"
 #include "./lcd.h"
 static char Unicode[128] = {0xA5,0x5A};
+
+//修改显示器亮度00-40
+void lcd::changeBrightness(){
+	char Brightness[] = {0xA5,0x5A,0x03,0x80,0x01,0x10};
+	UART2_SendBuffer((u8*)Brightness,ARRAY_SIZE(Brightness));
+}
+//显示器蜂鸣	 
+void lcd::BeepON(){
+	char Beep[] = {0xA5,0x5A,0x03,0x80,0x02,0xff};
+	UART2_SendBuffer((u8*)Beep,ARRAY_SIZE(Beep));
+	LOG_P("BeepON:%d  ",0x02);
+	//std::cout<<"jashdkjashd";
+	
+}
+//重置显示器	
 void lcd::reset(){
 	char Reset[] = {0xA5,0x5A,0x04,0x80,0xEE,0x5A,0xA5};
 	UART2_SendBuffer((u8*)Reset,ARRAY_SIZE(Reset));
 }
+//切换图片到第二张
 void lcd::readCurrPage(){
 	char PageCode[] = {0xA5,0x5A,0x03,0x81,0x03,0x02};
 	UART2_SendBuffer((u8*)PageCode,ARRAY_SIZE(PageCode));
 }
+//跳转到指定页面,page:页数
 void lcd::jumpToPage(short page){
+	//装在须要发送的页数()page
 	char PageCode[] = {0xA5,0x5A,0x04,0x80,0x03,*(1 + (char*)&page),*(char*)&page};
+	//通过串口发送数据
 	UART2_SendBuffer((u8*)PageCode,ARRAY_SIZE(PageCode));
 	delay_ms(100);
 	readCurrPage();
+	//发送两个中断,在main里面接收中断并刷新UI
 	PostEvent(PAGE,page,page,0);
 	PostEvent(PAGE,page,page,0);
 }
+
+//只是切换页面,没有刷新页面
 void lcd::jumpToPageDirect(short page){
 	char PageCode[] = {0xA5,0x5A,0x04,0x80,0x03,*(1 + (char*)&page),*(char*)&page};
 	UART2_SendBuffer((u8*)PageCode,ARRAY_SIZE(PageCode));
 }
+//刷新UI
 void lcd::parseCodes(char* codes,int len){
 	//page 0xa5 0x5a 0x5 0x81 0x3 0x2 0x0 0x5
 	if(len == 8 && codes[0] == 0xa5 && codes[1] == 0x5a && codes[2] == 0x5 &&
@@ -39,12 +62,14 @@ void lcd::parseCodes(char* codes,int len){
 		PostEvent(KEYCODE,code,code,0);
 	}
 }
+//按键触发
 void lcd::sendKeycode(char code){
 	char KeyCode[] = {0xA5,0x5A,0x03,0x80,0x4F,code};
 	UART2_SendBuffer((u8*)KeyCode,ARRAY_SIZE(KeyCode));
 }
+//控制显示的,详细文档在显示屏开发文档的4.0
 void lcd::sendAddrValue(short addr,short value){
-	//A55A05820508000F
+	//A55A05820508000F		  
 	char AddrValue[] = {0xA5,0x5A,0x05,0x82,*(1 + (char*)&addr),*(char*)&addr,*(1 + (char*)&value),*(char*)&value};
 	UART2_SendBuffer((u8*)AddrValue,ARRAY_SIZE(AddrValue));
 }
@@ -53,11 +78,13 @@ void lcd::sendAddrValue(short addr,short value1,short value2){
 	char AddrValue[] = {0xA5,0x5A,0x05,0x82,*(1 + (char*)&addr),*(char*)&addr,*(1 + (char*)&value1),*(char*)&value1,*(1 + (char*)&value2),*(char*)&value2};
 	UART2_SendBuffer((u8*)AddrValue,ARRAY_SIZE(AddrValue));
 }
+//空方法,没有被调用
 void lcd::sendAddrValueLong(short addr,unsigned long value){
 	//A55A05820508000F
 	char AddrValue[] = {0xA5,0x5A,0x07,0x82,*(1 + (char*)&addr),*(char*)&addr,*(3 + (char*)&value),*(2 + (char*)&value),*(1 + (char*)&value),*(char*)&value};
 	UART2_SendBuffer((u8*)AddrValue,ARRAY_SIZE(AddrValue));
 }
+//显示内容到lcd上
 void lcd::displayUnicode(short addr,short* buff,short len){
 	//A55A 09 82 0514 0031006D4F60597D
 	int totalLen = len * 2 + 3;
@@ -66,7 +93,7 @@ void lcd::displayUnicode(short addr,short* buff,short len){
 		return;
 	}
 	Unicode[2] = totalLen;
-	Unicode[3] = 0x82;
+	Unicode[3] = 0x82;																								   
 	Unicode[4] = *(1 + (char*)&addr);
 	Unicode[5] = *(char*)&addr;
 	char* pd = &Unicode[6];
@@ -79,6 +106,7 @@ void lcd::displayUnicode(short addr,short* buff,short len){
 	}
 	UART2_SendBuffer((u8*)Unicode,totalLen + 3);
 }
+//空方法没有被调用,代码内容同上个方法
 void lcd::displayUnicodeQueue(short addr,short* buff,short len){
 	//A55A 09 82 0514 0031006D4F60597D
 	int totalLen = len * 2 + 3;
@@ -100,15 +128,4 @@ void lcd::displayUnicodeQueue(short addr,short* buff,short len){
 		buff++;
 	}
 	UART2_SendBuffer((u8*)Unicode,totalLen + 3);
-}
-void lcd::beep(u8 len10ms){
-	//A5 5A 03 80 02 C8
-	Unicode[0] = 0xA5;
-	Unicode[1] = 0x5A;
-	Unicode[2] = 0x03;
-	Unicode[3] = 0x80;
-	Unicode[4] = 0x02;
-	Unicode[5] = len10ms;
-	UART2_SendBuffer((u8*)Unicode,6);
-	return;
 }

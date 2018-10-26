@@ -3,6 +3,7 @@
 #include "./Page.h"
 #include "../api/lcd.h"
 #include "../setting/Setting.h"
+//Ñ¡ÔñÂİÎÆÑÀ¾à£¬ÀıÈç£º4ÑÀ¡¢6ÑÀ¡¢8ÑÀ£»Ä¬ÈÏ4ÑÀ
 class Page9 : public Page
 {
 public:

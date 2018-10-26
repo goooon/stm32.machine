@@ -1,0 +1,1 @@
+-c --cpu Cortex-M3 -g -O0 --apcs=interwork -I..\sys -I..\hwlib\STM32F10x_FWLib\inc -I..\hwlib -I..\user -I "D:\work\MDK4\ARM\CMSIS\Include" -I "D:\work\MDK4\ARM\INC\ST\STM32F10x" -DSTM32F10X_HD -DUSE_STDPERIPH_DRIVER -o ".\output\i2c.o" --omf_browse ".\output\i2c.crf" --depend ".\output\i2c.d" "..\api\i2c.c"

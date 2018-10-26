@@ -6,6 +6,8 @@
 #include "../api/Tool.h"
 #include "./InputPage.h"
 #define INPUT_NUMB_MAX 100000
+
+//设置基准值界面
 class Page5 : public InputPage
 {
 public:
@@ -49,6 +51,43 @@ public:
 			displayRotateSpeed();
 			InputPage::onTimer();
 		}
+		virtual void displayFixedPulse(int index,u32 numb){//dist to zero
+		    int uiRowAddrIndex = 3 - index;
+			s32 defaultInputDist;
+			s32 defaultMainAxisInPulse;
+			u32 measureDist = numb;
+			u32 measurePuls = currMainAxisInPulse[index];
+			float combinedFixDist;
+			float combinedFixPulse;
+			short code[20];
+			char offset[] = {31,27,23,19,15,11,7,3,0,0,0,0,0};
+			int len = 0;
+			if(inputCharsLen[index] != 0){
+				
+			    Setting::getDefautMeasureFixPulse(defaultInputDist,defaultMainAxisInPulse);
+			    //Setting::getMeasureFixPulse(measureDist,measurePuls);
+
+			    combinedFixPulse = Setting::calculateDelayedPulse(defaultMainAxisInPulse,defaultInputDist,measurePuls,measureDist);
+			    combinedFixDist = Setting::pulseToDistUM(combinedFixPulse);
+
+
+				float dist = combinedFixDist;//Setting::calcDistToZero(numb,currMainAxisInPulse[index]);
+				if(dist > Setting::getDistUMCountPerTooth() / 2){
+					dist -= Setting::getDistUMCountPerTooth();
+				}
+				len = tool::convertFixed(dist,Setting::getPrecision(),code,20,false);
+				len --;
+				code[len++] = 'm';
+				code[len++] = 'm';
+				code[len++] = 0xffff;
+			}
+			else{
+				code[0] = 0xFFFF;
+				len = 1;
+			}
+			lcd::sendAddrValue(pulseBaseAddr - uiRowAddrIndex * 0x100,342 + offset[len - 4],185 - 16 * uiRowAddrIndex);
+			lcd::displayUnicode(inputPulseAddr[uiRowAddrIndex] + 0x20,code,len);
+	}
 		virtual ext::ExeCommand onKeyPressed(ext::ExeCommand cmd)
 		{
 				LOG_I("key pressed:%c/0x%x",cmd,cmd);

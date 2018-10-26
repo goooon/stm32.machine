@@ -15,11 +15,13 @@ public:
 			dispToothDist();
 			dispToothType();
 			dispToothCoverType();
-			u32 toothCount = Setting::getToothCount();
-			ext::Led::SetLed(ext::Led::TranspantLed,true);
-			ext::Led::SetLed(ext::Led::ProcessingLed,false);
-	    ext::Led::SetLed(ext::Led::WheelFixLed,false);
+			u32 toothCount = Setting::getToothCount(); //设置当前齿距的数量。存到本地
+			ext::Led::SetLed(ext::Led::TranspantLed,true);//初始化LED灯	   
+			ext::Led::SetLed(ext::Led::LED_1,false);//开机LED灯为关闭
+	    ext::Led::SetLed(ext::Led::LED_2,false);
+	    ext::Led::SetLed(ext::Led::LED_3,false);
 		}
+		// 存储齿距的初始数据
 		void dispToothDist(){
 			short code[20];
 			int i = 0;
@@ -32,6 +34,7 @@ public:
 			code[i++] = 0xffff;
 			lcd::displayUnicode(0x310,code,i);
 		}
+		//设置齿距数据类型 
 		void dispToothType(){
 			 short code[20];
 			 int i = 0;
@@ -42,17 +45,18 @@ public:
 			 code[i++] = 0x87ba;
 			 code[i++] = 0x7eb9;
 			 code[i++] = 0xffff;
-			 if(type == Male){
+			 if(type == Male){	 //公螺纹
 				  code[0] = 0x516c;
 				  lcd::displayUnicode(0x340,code,i);
 			 }
-			 else if(type == Female){
+			 else if(type == Female){	//母螺纹
 				  code[0] = 0x6bcd;
 				  lcd::displayUnicode(0x340,code,i);
 			 }
 			 else{
 			 }
-		}
+		} 
+		//设置齿距类型
 		void dispToothCoverType(){
 			short code[20];
 			 int i = 0;
@@ -69,6 +73,7 @@ public:
 			 lcd::displayUnicode(0x370,code,i);
 
 		}
+		//设置齿距的键盘按钮事件
 		virtual ext::ExeCommand onKeyPressed(ext::ExeCommand cmd)
 		{
 				LOG_I("key pressed:%c",cmd);

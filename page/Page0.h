@@ -9,7 +9,7 @@ public:
 	virtual void onTimer(){
 			  timeCounter++;
 			  LOG_I("onTimer");
-			  if(timeCounter >= 50){
+			  if(timeCounter >= 50){  //5ÃëºóÌø×ªµ½page1
 					lcd::jumpToPage(1);
 					timeCounter = 0;
 				}

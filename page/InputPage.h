@@ -6,6 +6,8 @@
 #include "../api/Tool.h"
 #define INPUT_NUMB_MAX 999999
 #define triIconBitSelectionMask (((u32)1) << (3 - currSelectedIndex))
+
+//ÉèÖÃÂö³åÊýÊäÈëÒ³Ãæ
 class InputPage : public Page
 {
 public:
@@ -76,7 +78,7 @@ public:
 				lcd::displayUnicode(inputDegreeAddr[uiRowAddrIndex],code,len);
 		}
 		//ï¿½ï¿½ï¿½ï¿½ï¿½Ó¦ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-		void displayFixedPulse(int index,u32 numb){//dist to zero
+		virtual void displayFixedPulse(int index,u32 numb){//dist to zero
 			  int uiRowAddrIndex = 3 - index;
 				short code[20];
 				char offset[] = {31,27,23,19,15,11,7,3,0,0,0,0,0};

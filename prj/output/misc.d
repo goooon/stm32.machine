@@ -1,0 +1,17 @@
+.\output\misc.o: ..\hwlib\STM32F10x_FWLib\src\misc.c
+.\output\misc.o: ..\hwlib\STM32F10x_FWLib\inc\misc.h
+.\output\misc.o: ..\user\stm32f10x.h
+.\output\misc.o: D:\work\MDK4\ARM\CMSIS\Include\core_cm3.h
+.\output\misc.o: D:\work\MDK4\ARM\RV31\INC\stdint.h
+.\output\misc.o: D:\work\MDK4\ARM\CMSIS\Include\core_cmInstr.h
+.\output\misc.o: D:\work\MDK4\ARM\CMSIS\Include\core_cmFunc.h
+.\output\misc.o: ..\user\system_stm32f10x.h
+.\output\misc.o: ..\user\stm32f10x_conf.h
+.\output\misc.o: ..\hwlib\STM32F10x_FWLib\inc\stm32f10x_dbgmcu.h
+.\output\misc.o: ..\user\stm32f10x.h
+.\output\misc.o: ..\hwlib\STM32F10x_FWLib\inc\stm32f10x_exti.h
+.\output\misc.o: ..\hwlib\STM32F10x_FWLib\inc\stm32f10x_gpio.h
+.\output\misc.o: ..\hwlib\STM32F10x_FWLib\inc\stm32f10x_rcc.h
+.\output\misc.o: ..\hwlib\STM32F10x_FWLib\inc\stm32f10x_tim.h
+.\output\misc.o: ..\hwlib\STM32F10x_FWLib\inc\stm32f10x_usart.h
+.\output\misc.o: ..\hwlib\STM32F10x_FWLib\inc\misc.h

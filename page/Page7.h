@@ -3,6 +3,8 @@
 #include "./Page.h"
 #include "../api/lcd.h"
 #include "../setting/Setting.h"
+
+//设置公母螺扣钻杆类型
 class Page7 : public Page
 {
 public:

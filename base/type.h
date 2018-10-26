@@ -63,6 +63,6 @@ typedef u32             color;
 // 	operator u32&() { return v; }
 // 	
 // };
-
+//宏定义,返回元素个数
 #define ARRAY_SIZE(a) sizeof(a)/sizeof(a[0])
 #endif

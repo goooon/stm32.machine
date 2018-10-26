@@ -1,0 +1,1 @@
+-c --cpu Cortex-M3 -g -O0 --apcs=interwork -I..\sys -I..\hwlib\STM32F10x_FWLib\inc -I..\hwlib -I..\user -I "D:\work\MDK4\ARM\CMSIS\Include" -I "D:\work\MDK4\ARM\INC\ST\STM32F10x" -DSTM32F10X_HD -DUSE_STDPERIPH_DRIVER -o ".\output\core_cm3.o" --omf_browse ".\output\core_cm3.crf" --depend ".\output\core_cm3.d" "..\core\core_cm3.c"

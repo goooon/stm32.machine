@@ -1,0 +1,60 @@
+*** Creating Trace Output File '.\output\zlg.tra' Ok.
+### Preparing for ADS-LD.
+### Creating ADS-LD Command Line
+### List of Objects: adding '".\output\stm32f10x_it.o"'
+### List of Objects: adding '".\output\system_stm32f10x.o"'
+### List of Objects: adding '".\output\main.o"'
+### List of Objects: adding '".\output\core_cm3.o"'
+### List of Objects: adding '".\output\startup_stm32f10x_hd.o"'
+### List of Objects: adding '".\output\misc.o"'
+### List of Objects: adding '".\output\stm32f10x_adc.o"'
+### List of Objects: adding '".\output\stm32f10x_bkp.o"'
+### List of Objects: adding '".\output\stm32f10x_can.o"'
+### List of Objects: adding '".\output\stm32f10x_cec.o"'
+### List of Objects: adding '".\output\stm32f10x_crc.o"'
+### List of Objects: adding '".\output\stm32f10x_dac.o"'
+### List of Objects: adding '".\output\stm32f10x_dbgmcu.o"'
+### List of Objects: adding '".\output\stm32f10x_dma.o"'
+### List of Objects: adding '".\output\stm32f10x_exti.o"'
+### List of Objects: adding '".\output\stm32f10x_flash.o"'
+### List of Objects: adding '".\output\stm32f10x_fsmc.o"'
+### List of Objects: adding '".\output\stm32f10x_gpio.o"'
+### List of Objects: adding '".\output\stm32f10x_i2c.o"'
+### List of Objects: adding '".\output\stm32f10x_iwdg.o"'
+### List of Objects: adding '".\output\stm32f10x_pwr.o"'
+### List of Objects: adding '".\output\stm32f10x_rcc.o"'
+### List of Objects: adding '".\output\stm32f10x_rtc.o"'
+### List of Objects: adding '".\output\stm32f10x_sdio.o"'
+### List of Objects: adding '".\output\stm32f10x_spi.o"'
+### List of Objects: adding '".\output\stm32f10x_tim.o"'
+### List of Objects: adding '".\output\stm32f10x_usart.o"'
+### List of Objects: adding '".\output\stm32f10x_wwdg.o"'
+### List of Objects: adding '".\output\delay.o"'
+### List of Objects: adding '".\output\sys.o"'
+### List of Objects: adding '".\output\usart.o"'
+### List of Objects: adding '".\output\event.o"'
+### List of Objects: adding '".\output\keyboard.o"'
+### List of Objects: adding '".\output\lcd.o"'
+### List of Objects: adding '".\output\tracer.o"'
+### List of Objects: adding '".\output\i2c.o"'
+### List of Objects: adding '".\output\encoder.o"'
+### List of Objects: adding '".\output\tool.o"'
+### List of Objects: adding '".\output\timer.o"'
+### List of Objects: adding '".\output\fpga.o"'
+### List of Objects: adding '".\output\led.o"'
+### List of Objects: adding '".\output\setting.o"'
+### ADS-LD Command completed:
+--cpu Cortex-M3 ".\output\stm32f10x_it.o" ".\output\system_stm32f10x.o" ".\output\main.o" ".\output\core_cm3.o" ".\output\startup_stm32f10x_hd.o" ".\output\misc.o" ".\output\stm32f10x_adc.o" ".\output\stm32f10x_bkp.o" ".\output\stm32f10x_can.o" ".\output\stm32f10x_cec.o" ".\output\stm32f10x_crc.o" ".\output\stm32f10x_dac.o" ".\output\stm32f10x_dbgmcu.o" ".\output\stm32f10x_dma.o" ".\output\stm32f10x_exti.o" ".\output\stm32f10x_flash.o" ".\output\stm32f10x_fsmc.o" ".\output\stm32f10x_gpio.o" ".\output\stm32f10x_i2c.o" ".\output\stm32f10x_iwdg.o" ".\output\stm32f10x_pwr.o" ".\output\stm32f10x_rcc.o" ".\output\stm32f10x_rtc.o" ".\output\stm32f10x_sdio.o" ".\output\stm32f10x_spi.o" ".\output\stm32f10x_tim.o" ".\output\stm32f10x_usart.o" ".\output\stm32f10x_wwdg.o" ".\output\delay.o" ".\output\sys.o" ".\output\usart.o" ".\output\event.o" ".\output\keyboard.o" ".\output\lcd.o" ".\output\tracer.o" ".\output\i2c.o" ".\output\encoder.o" ".\output\tool.o" ".\output\timer.o" ".\output\fpga.o" ".\output\led.o" ".\output\setting.o" --strict --scatter ".\output\zlg.sct" 
+--autoat --summary_stderr --info summarysizes --map --xref --callgraph --symbols 
+--info sizes --info totals --info unused --info veneers 
+ --list ".\zlg.map" -o ".\output\zlg.axf"### Preparing Environment (PrepEnvAds)
+### ADS-LD Output File: '.\output\zlg.axf'
+### ADS-LD Command File: '.\output\zlg.lnp'
+### Checking for dirty Components...
+### Creating CmdFile '.\output\zlg.lnp', Handle=0x00000200
+### Writing '.lnp' file
+### ADS-LD Command file '.\output\zlg.lnp' is ready.
+### ADS-LD: About to start ADS-LD Thread.
+### ADS-LD: executed with 0 errors
+### Updating obj list
+### LDADS_file() completed.
