@@ -58,36 +58,38 @@ void Timer1_Init(){
 //延时nus
 //nus为要延时的us数.		    								   
 void Timer1_DelayUS(uint us)
-{		
-	u32 temp;	    	 
-	SysTick->LOAD=SystemCoreClock/8000000 * us; //时间加载	  		 
-	SysTick->VAL=0x00;        //清空计数器
-	SysTick->CTRL|=SysTick_CTRL_ENABLE_Msk ;          //开始倒数	 
-	do
-	{
-		temp=SysTick->CTRL;
-	}
-	while(temp&0x01&&!(temp&(1<<16)));//等待时间到达   
-	SysTick->CTRL&=~SysTick_CTRL_ENABLE_Msk;       //关闭计数器
-	SysTick->VAL =0X00;       //清空计数器	 
+{
+    u32 temp;
+    __disable_irq();
+    SysTick->LOAD = SystemCoreClock / 8000000 * us; //时间加载
+    SysTick->VAL = 0x00;                            //清空计数器
+    SysTick->CTRL |= SysTick_CTRL_ENABLE_Msk;       //开始倒数
+    do
+    {
+        temp = SysTick->CTRL;
+    } while (temp & 0x01 && !(temp & (1 << 16))); //等待时间到达
+    SysTick->CTRL &= ~SysTick_CTRL_ENABLE_Msk;    //关闭计数器
+    SysTick->VAL = 0X00;                          //清空计数器
+    __enable_irq();
 }
 //延时nms
 //注意nms的范围
 //SysTick->LOAD为24位寄存器,所以,最大延时为:
 //nms<=0xffffff*8*1000/SYSCLK
 //SYSCLK单位为Hz,nms单位为ms
-//对72M条件下,nms<=1864 
+//对72M条件下,nms<=1864
 void Timer1_DelayMS(uint ms)
-{	 		  	  
-	u32 temp;		   
-	SysTick->LOAD=SystemCoreClock/8000 * (u32)ms;//时间加载(SysTick->LOAD为24bit)
-	SysTick->VAL =0x00;           //清空计数器
-	SysTick->CTRL|=SysTick_CTRL_ENABLE_Msk ;          //开始倒数  
-	do
-	{
-		temp=SysTick->CTRL;
-	}
-	while(temp&0x01&&!(temp&(1<<16)));//等待时间到达   
-	SysTick->CTRL&=~SysTick_CTRL_ENABLE_Msk;       //关闭计数器
-	SysTick->VAL =0X00;       //清空计数器	  	    
+{
+    u32 temp;
+    __disable_irq();
+    SysTick->LOAD = SystemCoreClock / 8000 * (u32)ms; //时间加载(SysTick->LOAD为24bit)
+    SysTick->VAL = 0x00;                              //清空计数器
+    SysTick->CTRL |= SysTick_CTRL_ENABLE_Msk;         //开始倒数
+    do
+    {
+        temp = SysTick->CTRL;
+    } while (temp & 0x01 && !(temp & (1 << 16))); //等待时间到达
+    SysTick->CTRL &= ~SysTick_CTRL_ENABLE_Msk;    //关闭计数器
+    SysTick->VAL = 0X00;                          //清空计数器
+    __enable_irq();
 }
